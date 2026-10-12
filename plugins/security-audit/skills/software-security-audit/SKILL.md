@@ -1,6 +1,6 @@
 ---
 name: software-security-audit
-description: Perform evidence-based whole-project software security audits of source code, architecture, configuration, dependencies, CI/CD and authorized runtime environments. Use for full repository audits, application security reviews, threat modeling and verified vulnerability reports. Distinguish this from a diff-only review; do not treat the output as a certification.
+description: Perform evidence-based whole-project software security audits, optional template-based PDF reports, and reviews of source code, architecture, configuration, dependencies, CI/CD and authorized runtime environments. Use for full repository audits, application security reviews, threat modeling and verified vulnerability reports. Distinguish this from a diff-only review; do not treat the output as a certification.
 ---
 
 # Software Security Audit
@@ -117,6 +117,14 @@ python3 <skill-directory>/scripts/validate_audit.py <audit-directory> --final
 Resolve structural errors. Final validation requires nonempty coverage and no pending
 rows; `blocked` and justified `not-applicable` remain valid but prevent an unqualified
 claim of complete verification. The validator cannot verify factual correctness.
+When a designed document or PDF is requested, follow
+[User templates and PDF reports](references/pdf-reports.md). Use the user's selected
+installed document/template skill or supplied template file when available. Preserve
+all audit evidence and limitations; collect cover metadata without inventing author
+or signer identities. Export and visually inspect `report.pdf` with available tools.
+Record missing rendering capability as a gap and retain the Markdown report.
+Never claim a signature or approval from a placeholder.
+
 Finish with important confirmed risks, pending suspicions, limitations and report path.
 If interrupted, preserve `checkpoint.md` with completed work, next checks and blockers.
 Resume from these artifacts; do not restart or invent completion.
