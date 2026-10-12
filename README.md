@@ -12,7 +12,7 @@
 
 Architecture · Code · Dependencies · Configuration · CI/CD · Compliance evidence
 
-[Quick start](#-quick-start) · [Workflow](#-audit-workflow) · [Coverage](#-review-coverage) · [SOC 2](#-soc-2-and-compliance-readiness) · [Development](#-development-and-validation)
+[Quick start](#-quick-start) · [Updates](#-updates-and-latest-version) · [Workflow](#-audit-workflow) · [Coverage](#-review-coverage) · [SOC 2](#-soc-2-and-compliance-readiness) · [Development](#-development-and-validation)
 
 </div>
 
@@ -78,6 +78,47 @@ organisatorische Nachweise und fehlende Informationen. Dokumentiere Prüflücken
 **Requirements:** Claude Code with plugin/skill support. Python 3.10+ is required for
 the helpers; they use only the standard library. Git and relevant scanners are optional
 capabilities whose absence must appear in the audit limitations.
+
+## 🔄 Updates and latest version
+
+### Update before an audit
+
+Run in your shell:
+
+```sh
+claude plugin marketplace update security-audit-kit
+claude plugin update security-audit@security-audit-kit
+claude plugin list
+```
+
+Confirm the installed version matches
+[plugin.json](plugins/security-audit/.claude-plugin/plugin.json). If installed at
+project or local scope, target the same scope when updating.
+
+Start a new Claude Code session after updating, or run this inside the open session:
+
+```text
+/reload-plugins
+```
+
+Refreshing the marketplace listing alone is not a substitute for updating the plugin.
+
+### Enable automatic updates
+
+1. Run `/plugin` in Claude Code.
+2. Open **Marketplaces** and select **security-audit-kit**.
+3. Choose **Enable auto-update**.
+
+Third-party marketplaces have auto-update disabled by default. When enabled, updates
+run in the background after session startup. Already loaded sessions keep their old
+version until reloaded; new sessions load the updated version.
+
+For a current audit, run the manual commands first, verify the version, then reload.
+Offline access, policy restrictions or failed updates can leave an older version
+installed; automatic updates are not a guarantee.
+
+Standalone copied skills require manual replacement from the latest repository.
+See [Claude Code update documentation](https://code.claude.com/docs/en/discover-plugins#keep-plugins-updated).
 
 ## 🎨 Your template, your PDF report
 
