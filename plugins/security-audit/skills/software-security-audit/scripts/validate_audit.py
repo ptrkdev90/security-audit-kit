@@ -208,6 +208,20 @@ def validate(directory, final=False):
                         if any(ref not in evidence for ref in signature["evidence_ids"]): errors.append("report-metadata: unknown signature evidence")
             except (OSError, ValueError) as exc:
                 errors.append(record + ": cannot load JSON (" + type(exc).__name__ + ")")
+    if (directory / "documentation-profile.json").exists():
+        try:
+            profile = json.loads((directory / "documentation-profile.json").read_text(encoding="utf-8"))
+            schema = json.loads((SCHEMAS / "documentation-profile.schema.json").read_text())
+            problems = schema_errors(profile, schema, "documentation-profile")
+            errors.extend(problems)
+            if not problems:
+                for item in profile["items"]:
+                    if any(ref not in evidence for ref in item["evidence_ids"]):
+                        errors.append("documentation-profile: unknown evidence reference")
+                    if item["full_text_reviewed"] and not item["evidence_ids"]:
+                        errors.append("documentation-profile: full-text review requires evidence")
+        except (OSError, ValueError) as exc:
+            errors.append("documentation-profile: cannot load JSON (" + type(exc).__name__ + ")")
     if final:
         if not data.get("coverage"): errors.append("Final audit requires nonempty coverage")
         for name in ("inventory.json", "scope.md", "threat-model.md", "report.md"):

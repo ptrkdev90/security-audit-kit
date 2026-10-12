@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0
+
+- Audience/glossary and editorial guidance; documented accessibility/archival limits.
+- Separate audit/exporter/schema/template/report versions and source/output hashes.
+- Explicit manual migration, preserved original artifacts and unsigned revised reports.
+- Primary-source standards applicability guide and optional evidence-backed profile.
+
+
 ## 0.6.0
 
 - Shared validated report model; matching Markdown/static HTML and optional neutral PDF.

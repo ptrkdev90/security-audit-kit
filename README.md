@@ -6,7 +6,7 @@
 
 [![Validate](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml/badge.svg)](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.6.0-334155)
+![Version](https://img.shields.io/badge/version-0.7.0-334155)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-D97757)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
 
@@ -409,3 +409,10 @@ HTML/Markdown use the standard library. PDF needs installed ReportLab; PDF text 
 installed pypdf. The neutral theme supports a palette/font choice; DOCX and template skills
 retain their own export workflow. Receipts bind sources and outputs by hash. Text validation
 does not replace inspecting every rendered page. All default reports remain unsigned.
+
+### Documentation and format control
+
+See [documentation profile](docs/DOCUMENTATION.md), [standards applicability](docs/STANDARDS.md),
+and [manual migrations](docs/MIGRATIONS.md). Plugin, schema, report and template versions
+are tracked separately. No SOC 2, documentation-standard, PDF/A or PDF/UA conformity is
+asserted by a successful helper check.

@@ -20,3 +20,18 @@ Do not claim ASVS compliance without selecting a specific version/level and mapp
 all applicable requirements to evidence.
 
 - AICPA SOC 2: https://www.aicpa-cima.com/category/resources/audit-assurance/audit-and-assurance-greater-than-soc-2
+
+## Documentation and architecture sources
+
+Primary public scope descriptions checked on 2026-10-12; full standard texts not examined:
+
+- ISO/IEC/IEEE 26514:2022: https://www.iso.org/standard/77451.html
+- IEC/IEEE 82079-1:2019: https://webstore.iec.ch/en/publication/29075
+- ISO/IEC/IEEE 42010:2022: https://www.iso.org/standard/74393.html
+- ASD-STE100 official downloads: https://www.asd-ste100.org/STE_downloads.html
+- iiRDS 1.2 publisher: https://www.iirds.org/materials/version-12
+- ISO 20607:2019: https://www.iso.org/standard/68519.html
+- VDI 2770 publisher: https://www.vdi.de/mitgliedschaft/vdi-richtlinien/details/vdi-2770-blatt-1-betrieb-verfahrenstechnischer-anlagen-mindestanforderungen-an-digitale-herstellerinformationen-fuer-die-prozessindustrie-grundlagen
+
+User-supplied discovery article (secondary overview, not normative requirements):
+https://quanos.com/en/blog/technical-documentation/detail/technical-documentation-the-most-important-standards/

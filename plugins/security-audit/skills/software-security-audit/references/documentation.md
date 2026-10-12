@@ -29,3 +29,7 @@ Use optional `audience` and `glossary` fields in report-source.json. Keep the na
 and machine artifacts consistent. Default PDF is not tagged PDF/UA; no PDF/UA or PDF/A
 conformance is asserted. Custom accessibility/archival requirements need a capable renderer
 and a separate format-specific validation step.
+
+When a standard profile is requested, create documentation-profile.json from its template,
+select editions from authoritative sources, distinguish full-text review from public
+abstracts, and cite evidence. Do not declare formal conformity from this helper's checks.

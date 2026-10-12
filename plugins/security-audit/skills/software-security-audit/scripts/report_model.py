@@ -21,6 +21,12 @@ def build(directory):
         if path.is_symlink(): raise ValueError('Report source cannot be a symlink')
         raw = path.read_bytes(); hashes[name] = hashlib.sha256(raw).hexdigest()
         records[name] = json.loads(raw) if name.endswith('.json') else raw.decode('utf-8')
+    for name in ('documentation-profile.json','compliance-matrix.csv','migration.json'):
+        path=directory/name
+        if path.exists():
+            if path.is_symlink(): raise ValueError('Optional report source cannot be a symlink')
+            raw=path.read_bytes();hashes[name]=hashlib.sha256(raw).hexdigest()
+            records[name]=json.loads(raw) if name.endswith('.json') else raw.decode('utf-8')
     if records['findings.json']['schema_version'] != '1.2': raise ValueError('Migrate findings manually to 1.2 before export')
     metadata = records['report-metadata.json']
     snapshot = records['inventory.json'].get('git', {})
@@ -35,4 +41,4 @@ def build(directory):
             'evidence': records['evidence.json']['items'], 'tool_runs': records['tool-runs.json']['items'],
             'counts': counts, 'source_sha256': hashes,
             'limitations': records['inventory.json'].get('limitations', []),
-            'scope_document': records['scope.md'], 'threat_document': records['threat-model.md']}
+            'documentation_profile':records.get('documentation-profile.json'), 'compliance_matrix':records.get('compliance-matrix.csv'), 'migration':records.get('migration.json'), 'scope_document': records['scope.md'], 'threat_document': records['threat-model.md']}

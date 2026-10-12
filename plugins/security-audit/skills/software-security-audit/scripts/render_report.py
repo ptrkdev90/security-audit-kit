@@ -51,7 +51,7 @@ def sections(model):
             ('tools',LABELS[meta['language']]['tools'],model['tool_runs']),
             ('evidence',LABELS[meta['language']]['evidence'],model['evidence']),
             ('remediation',LABELS[meta['language']]['remediation'],narrative['remediation_summary']),
-            ('compliance',LABELS[meta['language']]['compliance'],narrative['compliance_summary']),
+            ('compliance',LABELS[meta['language']]['compliance'],{'summary':narrative['compliance_summary'],'matrix':model.get('compliance_matrix'),'documentation_profile':model.get('documentation_profile')}),
             ('signoff',LABELS[meta['language']]['signoff'],{'prepared_by':meta['prepared_by'],'reviewed_by':meta['reviewed_by'],'approved_by':meta['approved_by'],'signature':meta['signature'],'full_metadata':meta})]
 
 
