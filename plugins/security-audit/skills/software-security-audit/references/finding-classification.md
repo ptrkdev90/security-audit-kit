@@ -1,6 +1,6 @@
 # Classify what the evidence actually establishes
 
-Use findings schema 1.1. Record kind independently from status, severity and confidence.
+Use findings schema 1.2. Record kind independently from status, severity and confidence.
 
 | kind | Confirmed means | Does not establish |
 |---|---|---|
@@ -56,9 +56,9 @@ Do not infer either from a proposed recommendation.
 
 ## Existing records
 
-Schema 1.0 remains readable for interim review. Finalization requires 1.1. Preserve IDs
-and evidence, manually add kind, verification_basis, exploitability, severity_rationale,
-verification_limits and refutation_scope to each item, and reassess status. Set only the
-findings schema_version to 1.1; coverage and tool-runs remain 1.0. Never auto-convert
-confirmed scanner hits into confirmed vulnerabilities. The validator checks recorded
-consistency, not the truth of supplied evidence.
+Legacy 1.0/1.1 records remain readable for review. New exports require findings 1.2,
+registered evidence, threat links, architecture, narrative and metadata. Preserve IDs
+and originals; manually reassess kind, status, verification basis, exploitability,
+defenses and limits. Never synthesize proof to pass validation. Use the explicit
+review-file migration helper and the repository migration guide. Coverage/tool-runs
+remain 1.0. Structure checks do not establish factual correctness.

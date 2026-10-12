@@ -260,6 +260,39 @@
         "en",
         "de"
       ]
+    },
+    "document_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "report_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changed_at": {
+            "type": "string",
+            "minLength": 1
+          },
+          "author": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "report_version",
+          "changed_at",
+          "author",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [

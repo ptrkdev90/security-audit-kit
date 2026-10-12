@@ -94,7 +94,7 @@ def export_pdf(audit, output, theme_path=None, font_path=None):
     try: doc.build(story,onFirstPage=footer,onLaterPages=footer)
     except Exception:
         output.unlink(missing_ok=True);raise
-    receipt={'schema_version':'1.0','exported_at':datetime.now(timezone.utc).isoformat(),'renderer':'ReportLab','renderer_version':reportlab.Version,'font_sha256':hashlib.sha256(font_file.read_bytes()).hexdigest(),'theme':theme,'source_sha256':model['source_sha256'],'pdf_sha256':hashlib.sha256(output.read_bytes()).hexdigest(),'signature_status':'unsigned','visual_inspection':'not-performed','limitations':['Render all pages and inspect before claiming layout verified.','Custom template skills require their own exporter; neutral PDF does not reproduce DOCX templates.']}
+    receipt={'schema_version':'1.0','exported_at':datetime.now(timezone.utc).isoformat(),'exporter_plugin_version':json.loads((Path(__file__).resolve().parents[3]/'.claude-plugin/plugin.json').read_text())['version'],'schema_versions':model['schema_versions'],'renderer':'ReportLab','renderer_version':reportlab.Version,'font_sha256':hashlib.sha256(font_file.read_bytes()).hexdigest(),'theme':theme,'source_sha256':model['source_sha256'],'pdf_sha256':hashlib.sha256(output.read_bytes()).hexdigest(),'signature_status':'unsigned','visual_inspection':'not-performed','limitations':['Render all pages and inspect before claiming layout verified.','Custom template skills require their own exporter; neutral PDF does not reproduce DOCX templates.']}
     receipt_path=output.with_suffix('.export.json')
     with receipt_path.open('x',encoding='utf-8') as stream: json.dump(receipt,stream,indent=2);stream.write('\n')
     return output

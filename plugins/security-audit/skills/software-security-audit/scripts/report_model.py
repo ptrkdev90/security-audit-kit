@@ -29,7 +29,7 @@ def build(directory):
     kinds = ('security-vulnerability', 'dependency-advisory', 'control-gap', 'hardening', 'evidence-gap')
     statuses = ('suspected', 'confirmed', 'refuted', 'accepted-risk', 'fixed')
     counts = {kind: {status: sum(r['kind'] == kind and r['status'] == status for r in records['findings.json']['items']) for status in statuses} for kind in kinds}
-    return {'schema_version': '1.0', 'metadata': metadata, 'narrative': records['report-source.json'],
+    return {'schema_version': '1.0', 'schema_versions': {name: data.get('schema_version','unversioned') for name,data in records.items() if isinstance(data,dict)}, 'metadata': metadata, 'narrative': records['report-source.json'],
             'architecture': records['architecture.json'], 'plan': records['audit-plan.json'],
             'findings': records['findings.json']['items'], 'coverage': records['coverage.json']['items'],
             'evidence': records['evidence.json']['items'], 'tool_runs': records['tool-runs.json']['items'],

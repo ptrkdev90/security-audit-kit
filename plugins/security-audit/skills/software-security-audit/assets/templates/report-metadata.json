@@ -43,5 +43,6 @@
   },
   "schema_version": "1.0",
   "plugin_version": null,
-  "language": "en"
+  "language": "en",
+  "document_history": []
 }

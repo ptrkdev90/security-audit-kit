@@ -115,7 +115,7 @@ def render(directory, output, theme_path=None):
     output = Path(output); output.mkdir(parents=True, exist_ok=False)
     for name, content in [('report.md',md),('report.html',document),('report-model.json',json.dumps(model,indent=2,ensure_ascii=False)+'\n')]:
         (output / name).write_text(content,encoding='utf-8')
-    receipt = {'schema_version':'1.0','exported_at':datetime.now(timezone.utc).isoformat(),'theme':theme,'signature_status':'unsigned','source_sha256':model['source_sha256'],
+    receipt = {'schema_version':'1.0','exported_at':datetime.now(timezone.utc).isoformat(),'theme':theme,'signature_status':'unsigned','exporter_plugin_version':json.loads((Path(__file__).resolve().parents[3]/'.claude-plugin/plugin.json').read_text())['version'],'schema_versions':model['schema_versions'],'source_sha256':model['source_sha256'],
                'output_sha256':{name:hashlib.sha256((output/name).read_bytes()).hexdigest() for name in ('report.md','report.html','report-model.json')},
                'checks':['Shared canonical model used for all outputs','Text escaped; no JavaScript, remote resources or template code'],
                'limitations':['No PDF or visual inspection performed by HTML renderer','Custom template skill/DOCX fidelity requires its own export workflow']}
