@@ -22,6 +22,12 @@ def main():
         assert (skill / relative).is_file(), relative
     for path in (skill / "assets/schemas").glob("*.json"):
         json.loads(path.read_text())
+    for markdown in ROOT.rglob("*.md"):
+        if ".git" in markdown.parts: continue
+        for relative in re.findall(r"\]\(([^)]+)\)", markdown.read_text(encoding="utf-8")):
+            if relative.startswith(("http:", "https:", "#", "mailto:")): continue
+            path = (markdown.parent / relative.split("#", 1)[0]).resolve()
+            assert path.is_relative_to(ROOT.resolve()) and path.exists(), str(markdown) + ": " + relative
     print("Repository manifests, skill frontmatter and resource links valid.")
 
 if __name__ == "__main__":
