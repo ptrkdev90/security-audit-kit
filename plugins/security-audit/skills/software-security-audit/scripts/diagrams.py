@@ -77,18 +77,41 @@ def svg(model):
     return ET.tostring(root, encoding='unicode')
 
 
+
+def attack_views(model, plan):
+    checked(model)
+    result = {}
+    for threat in plan['threats']:
+        if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]{0,63}', threat['id']):
+            raise ValueError('Unsafe threat ID')
+        refs = set(threat['flow_ids'])
+        if not refs: continue  # Source-only hypotheses without modeled flows remain in tables.
+        flows = [f for f in model['flows'] if f['id'] in refs]
+        if len(flows) != len(refs): raise ValueError('Unknown threat flow')
+        nodes = {f[key] for f in flows for key in ('source', 'target')}
+        components = [n for n in model['components'] if n['id'] in nodes]
+        boundaries = {n['boundary_id'] for n in components}
+        view = dict(model, components=components, flows=flows,
+                    boundaries=[b for b in model['boundaries'] if b['id'] in boundaries])
+        result[threat['id']] = mermaid(view)
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('architecture'); parser.add_argument('--output-dir', required=True)
+    parser.add_argument('--plan')
     args = parser.parse_args()
     try:
         model = json.loads(Path(args.architecture).read_text(encoding='utf-8'))
         mmd, graphic = mermaid(model), svg(model)
+        views = attack_views(model, json.loads(Path(args.plan).read_text(encoding='utf-8'))) if args.plan else {}
         output = Path(args.output_dir); output.mkdir(parents=True, exist_ok=True)
-        for filename in ('architecture.mmd', 'architecture.svg'):
+        for filename in ('architecture.mmd', 'architecture.svg', *(i + '.mmd' for i in views)):
             if (output / filename).exists(): raise ValueError('Diagram output exists; use a new directory')
         (output / 'architecture.mmd').write_text(mmd, encoding='utf-8')
         (output / 'architecture.svg').write_text(graphic, encoding='utf-8')
+        for name, view in views.items(): (output / (name + '.mmd')).write_text(view, encoding='utf-8')
     except (OSError, ValueError, KeyError) as exc:
         parser.exit(2, 'Diagram export failed: ' + type(exc).__name__ + '\n')
 

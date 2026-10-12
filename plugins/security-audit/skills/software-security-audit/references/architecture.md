@@ -19,3 +19,14 @@ Link high-risk flows to threats and coverage. Include role escalation, tenant tr
 error/fallback paths and asynchronous operations. Use the generated Mermaid view for
 GitHub/Markdown; use the local SVG renderer for offline HTML/PDF. Never load CDN scripts
 or send architecture to an external diagram service without authorization.
+
+Generate architecture and threat flowcharts in a fresh directory:
+
+```sh
+python3 <skill-directory>/scripts/diagrams.py <audit>/architecture.json --plan <audit>/audit-plan.json --output-dir <audit>/diagrams
+```
+
+Each threat's `flow_ids` selects actual modeled edges. With no flow evidence, keep an
+explicit source-only hypothesis in the threat table; do not invent an attack sequence.
+The SVG view is intentionally limited to 20 components/flows; split larger systems into
+separate documented views. Diagram labels may be shortened; report tables retain full text.

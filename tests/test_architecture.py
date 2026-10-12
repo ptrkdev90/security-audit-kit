@@ -38,3 +38,10 @@ class ArchitectureTest(unittest.TestCase):
         write(self.audit, 'architecture.json', self.arch)
         self.assertTrue(any('endpoint' in x for x in load('validate_audit').validate(self.audit)))
         with self.assertRaises(ValueError): self.diagram.svg(self.arch)
+
+    def test_unknown_attack_flow_is_rejected(self):
+        plan = {'threats': [{'id': 'TH1', 'flow_ids': ['missing']}]}
+        with self.assertRaises(ValueError): self.diagram.attack_views(self.arch, plan)
+
+    def test_source_hypothesis_does_not_invent_diagram_flow(self):
+        self.assertEqual(self.diagram.attack_views(self.arch, {'threats': [{'id': 'TH1', 'flow_ids': []}]}), {})

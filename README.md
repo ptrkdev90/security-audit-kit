@@ -6,7 +6,7 @@
 
 [![Validate](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml/badge.svg)](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.3.0-334155)
+![Version](https://img.shields.io/badge/version-0.4.0-334155)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-D97757)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
 
@@ -385,3 +385,6 @@ checks must appear in coverage, including blocked runtime/deployment verificatio
 
 `architecture.json` records trust boundaries, components and data flows with observation
 status and evidence. Unknown deployment behavior stays visible in each view.
+
+Architecture diagrams are generated locally as Mermaid and SVG; threat `flow_ids`
+select evidence-backed attack-path views without external rendering services.

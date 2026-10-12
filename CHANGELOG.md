@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+- Structured architecture with evidence, trust boundaries and explicit uncertainty.
+- Local Mermaid/SVG views, safe labels, and threat-to-flow references.
+- Schema/reference tests; no claims of deployed-state verification from diagrams.
+
+
 ## 0.3.0
 
 - Findings 1.2: structured evidence and threat references, typed confirmation checks.

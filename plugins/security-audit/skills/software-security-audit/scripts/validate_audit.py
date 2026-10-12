@@ -106,6 +106,7 @@ def validate(directory, final=False):
     for row in data.get("tool-runs", []):
         if row["status"] in {"completed", "failed"} and row["exit_code"] is None: errors.append(row["id"] + ": missing exit code")
         if row["status"] in {"failed", "unavailable"} and not row["limitations"]: errors.append(row["id"] + ": requires execution limitation")
+    architecture_flows = set()
     if (directory / "architecture.json").exists():
         try:
             architecture = json.loads((directory / "architecture.json").read_text(encoding="utf-8"))
@@ -115,6 +116,7 @@ def validate(directory, final=False):
             if not problems:
                 import re
                 groups = {name: {r["id"] for r in architecture[name]} for name in ("boundaries", "components", "flows")}
+                architecture_flows = groups["flows"]
                 ids = [row["id"] for group in groups for row in architecture[group]]
                 if len(ids) != len(set(ids)): errors.append("architecture: duplicate IDs")
                 for group in groups:
@@ -149,6 +151,8 @@ def validate(directory, final=False):
                 threat_ids = {r["id"] for r in plan["threats"]}
                 if len(threat_ids) != len(plan["threats"]): errors.append("audit-plan: duplicate threat IDs")
                 for threat in plan["threats"]:
+                    if any(ref not in architecture_flows for ref in threat["flow_ids"]):
+                        errors.append(threat["id"] + ": unknown threat flow reference")
                     if not threat["coverage_ids"] or any(ref not in coverage_ids for ref in threat["coverage_ids"]):
                         errors.append(threat["id"] + ": threat needs valid coverage references")
                 for finding in data.get("findings", []):
