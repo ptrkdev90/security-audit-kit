@@ -89,7 +89,7 @@ Keep raw outputs local; sanitize before sharing. Never invoke `audit fix` automa
 ## 5. Verify and triage
 
 Read [Finding classification](references/finding-classification.md) and
-[Finding verification](references/verification.md). Use findings schema 1.1. Every scanner hit starts as
+[Finding verification](references/verification.md). Use findings schema 1.2 and [Evidence contracts](references/evidence-contracts.md). Every scanner hit starts as
 `suspected`. Inspect reachability, attacker-controlled input, prerequisites, defenses,
 actual impact and counterevidence. Create a minimal safe test when appropriate.
 Separate severity from confidence. Search for variants of each confirmed root cause.

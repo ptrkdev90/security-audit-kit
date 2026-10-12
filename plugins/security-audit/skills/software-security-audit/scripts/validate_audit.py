@@ -8,7 +8,7 @@ SCHEMAS = Path(__file__).resolve().parents[1] / "assets" / "schemas"
 
 def schema_errors(value, schema, path="$ "):
     errors = []
-    kinds = {"object": lambda v: isinstance(v, dict), "array": lambda v: isinstance(v, list), "string": lambda v: isinstance(v, str), "integer": lambda v: isinstance(v, int) and not isinstance(v, bool), "null": lambda v: v is None}
+    kinds = {"object": lambda v: isinstance(v, dict), "array": lambda v: isinstance(v, list), "string": lambda v: isinstance(v, str), "boolean": lambda v: isinstance(v, bool), "integer": lambda v: isinstance(v, int) and not isinstance(v, bool), "null": lambda v: v is None}
     expected = schema.get("type")
     if expected and not any(kinds[k](value) for k in ([expected] if isinstance(expected, str) else expected)):
         return [path + ": invalid type"]
@@ -31,7 +31,7 @@ def schema_errors(value, schema, path="$ "):
 def validate(directory, final=False):
     directory = Path(directory)
     errors, data, versions = [], {}, {}
-    for name in ("coverage", "findings", "tool-runs"):
+    for name in ("coverage", "findings", "tool-runs", "evidence"):
         try:
             value = json.loads((directory / (name + ".json")).read_text(encoding="utf-8"))
             schema = json.loads((SCHEMAS / (name + ".schema.json")).read_text(encoding="utf-8"))
@@ -53,8 +53,32 @@ def validate(directory, final=False):
         if final and status == "pending": errors.append(row["id"] + ": pending coverage at finalization")
     if final and versions.get("findings") == "1.0":
         errors.append("findings: legacy 1.0 requires manual classification migration to 1.1 before finalization")
+    evidence = {r["id"]: r for r in data.get("evidence", [])}
+    for item in evidence.values():
+        try:
+            from datetime import datetime
+            dt = datetime.fromisoformat(item["observed_at"].replace("Z", "+00:00"))
+            if dt.tzinfo is None: raise ValueError()
+        except ValueError:
+            errors.append(item["id"] + ": observed_at requires an offset timestamp")
+        if item["sha256"] is not None:
+            import re
+            if not re.fullmatch(r"[0-9a-f]{64}", item["sha256"]):
+                errors.append(item["id"] + ": invalid sha256")
     for row in data.get("findings", []):
-        if versions.get("findings") == "1.1":
+        if versions.get("findings") == "1.2":
+            refs = row.get("evidence_ids", [])
+            if "evidence_ids" not in row or "threat_ids" not in row:
+                errors.append(row["id"] + ": requires evidence_ids and threat_ids")
+            if any(ref not in evidence for ref in refs):
+                errors.append(row["id"] + ": unknown evidence reference")
+            if row["status"] in {"confirmed", "accepted-risk", "fixed"} and not refs:
+                errors.append(row["id"] + ": requires registered evidence")
+            if row.get("kind") == "security-vulnerability" and row["status"] in {"confirmed", "accepted-risk", "fixed"}:
+                expected = {"source-trace": "source", "runtime-test": "runtime"}.get(row.get("verification_basis"))
+                if not any(evidence.get(ref, {}).get("type") == expected for ref in refs):
+                    errors.append(row["id"] + ": verification basis lacks matching evidence type")
+        if versions.get("findings") in {"1.1", "1.2"}:
             for field in ("kind", "verification_basis", "exploitability", "severity_rationale", "verification_limits", "refutation_scope"):
                 if field not in row:
                     errors.append(row["id"] + ": requires " + field)

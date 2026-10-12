@@ -5,7 +5,8 @@
     "schema_version": {
       "enum": [
         "1.0",
-        "1.1"
+        "1.1",
+        "1.2"
       ]
     },
     "items": {
@@ -160,6 +161,20 @@
           },
           "refutation_scope": {
             "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "threat_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
         "required": [

@@ -34,7 +34,7 @@ verify candidates and document what remains untested.
 | **Portable artifacts** | Markdown reports, JSON records and a CSV compliance matrix |
 | **Template-based PDF reports** | Optional user-selected Claude document templates, cover metadata and sign-off fields |
 
-This repository provides one standalone skill and three local Python helpers. Scanner
+This repository provides one standalone skill and local Python helpers. Scanner
 binaries and rules are installed separately. No Trail of Bits installation is required;
 its skills are not bundled. Reports can be written in **English or German**.
 
@@ -178,7 +178,7 @@ flowchart TD
     I --> J["Remediation and retest when requested"]
 ```
 
-Findings schema **1.1** separates record kind from status. A confirmed dependency
+Findings schema **1.2** separates record kind from status. A confirmed dependency
 advisory does not imply an exploitable application flaw. Confirmation of an application
 vulnerability requires a source trace or runtime test, examined defenses and established
 exploitability. Refutations must name their exact scope; absence of two sink patterns
@@ -370,3 +370,8 @@ Original instructions and helpers are available under the [MIT License](LICENSE)
 External scanners and rule packs retain their own licenses.
 
 Consult [official sources](docs/SOURCES.md) for tool documentation and framework references.
+
+### Structured evidence
+
+`evidence.json` links findings to timestamped, snapshot-specific source, runtime,
+scanner or documentary evidence. Validation checks references and types, not truth.
