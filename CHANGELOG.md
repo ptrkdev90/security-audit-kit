@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- Lean phase routing and conservative, allowlisted snapshot/resume helper.
+- Explicit context/tool/scope invalidation and snapshot expiry.
+- Text-size proxies and paired real-usage benchmark support with quality guardrails.
+- Actual model token savings remain unmeasured.
+
+
 ## 0.4.0
 
 - Structured architecture with evidence, trust boundaries and explicit uncertainty.
