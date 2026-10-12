@@ -380,3 +380,8 @@ scanner or documentary evidence. Validation checks references and types, not tru
 
 `audit-plan.json` connects abuse cases to coverage rows and findings. Required domain
 checks must appear in coverage, including blocked runtime/deployment verification.
+
+### Architecture model
+
+`architecture.json` records trust boundaries, components and data flows with observation
+status and evidence. Unknown deployment behavior stays visible in each view.

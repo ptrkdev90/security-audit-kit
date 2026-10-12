@@ -55,7 +55,8 @@ from [Scope template](assets/templates/scope.md), preserving user decisions.
 
 ## 2. Map architecture and threat model
 
-Read [Threat modeling](references/threat-model.md). Map identities, role/tenant
+Read [Threat modeling](references/threat-model.md) and
+[Architecture views](references/architecture.md). Populate `architecture.json`. Map identities, role/tenant
 boundaries, untrusted inputs, privileged actions, storage and external integrations.
 Trace representative end-to-end flows, including failure paths. Identify assets and
 attacker capabilities. Create `threat-model.md` from its template. Do not invent deployment

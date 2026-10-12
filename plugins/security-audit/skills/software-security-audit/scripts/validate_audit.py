@@ -106,6 +106,39 @@ def validate(directory, final=False):
     for row in data.get("tool-runs", []):
         if row["status"] in {"completed", "failed"} and row["exit_code"] is None: errors.append(row["id"] + ": missing exit code")
         if row["status"] in {"failed", "unavailable"} and not row["limitations"]: errors.append(row["id"] + ": requires execution limitation")
+    if (directory / "architecture.json").exists():
+        try:
+            architecture = json.loads((directory / "architecture.json").read_text(encoding="utf-8"))
+            arch_schema = json.loads((SCHEMAS / "architecture.schema.json").read_text(encoding="utf-8"))
+            problems = schema_errors(architecture, arch_schema, "architecture")
+            errors.extend(problems)
+            if not problems:
+                import re
+                groups = {name: {r["id"] for r in architecture[name]} for name in ("boundaries", "components", "flows")}
+                ids = [row["id"] for group in groups for row in architecture[group]]
+                if len(ids) != len(set(ids)): errors.append("architecture: duplicate IDs")
+                for group in groups:
+                    for row in architecture[group]:
+                        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,63}", row["id"]):
+                            errors.append("architecture: unsafe ID")
+                        if any(ref not in evidence for ref in row["evidence_ids"]):
+                            errors.append(row["id"] + ": unknown architecture evidence")
+                        if row["status"] == "observed" and not row["evidence_ids"]:
+                            errors.append(row["id"] + ": observed architecture requires evidence")
+                        if row["status"] != "observed" and not row["limitations"]:
+                            errors.append(row["id"] + ": uncertain architecture requires limitations")
+                for row in architecture["components"]:
+                    if row["boundary_id"] not in groups["boundaries"]:
+                        errors.append(row["id"] + ": unknown trust boundary")
+                for row in architecture["flows"]:
+                    if row["source"] not in groups["components"] or row["target"] not in groups["components"]:
+                        errors.append(row["id"] + ": unknown flow endpoint")
+                if final and versions.get("findings") == "1.2" and (not architecture["components"] or not architecture["stakeholders"] or not architecture["concerns"]):
+                    errors.append("architecture: final audit requires components, stakeholders and concerns")
+        except (OSError, ValueError) as exc:
+            errors.append("architecture: cannot load JSON (" + type(exc).__name__ + ")")
+    elif versions.get("findings") == "1.2":
+        errors.append("architecture: missing architecture.json")
     if versions.get("findings") == "1.2":
         try:
             plan = json.loads((directory / "audit-plan.json").read_text(encoding="utf-8"))
