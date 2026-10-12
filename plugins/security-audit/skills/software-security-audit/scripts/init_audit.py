@@ -11,7 +11,7 @@ def initialize(output):
     for name in ("scope.md", "threat-model.md", "report.md", "checkpoint.md"):
         (output / name).write_text((templates / name).read_text(encoding="utf-8"), encoding="utf-8")
     for name in ("coverage", "findings", "tool-runs"):
-        (output / (name + ".json")).write_text(json.dumps({"schema_version": "1.0", "items": []}, indent=2) + "\n", encoding="utf-8")
+        (output / (name + ".json")).write_text(json.dumps({"schema_version": "1.1" if name == "findings" else "1.0", "items": []}, indent=2) + "\n", encoding="utf-8")
     return output
 
 def main():

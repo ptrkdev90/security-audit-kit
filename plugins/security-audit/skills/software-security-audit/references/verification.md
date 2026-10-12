@@ -8,7 +8,7 @@
 6. Assign severity based on impact and prerequisites, separately from confidence.
 7. Search variants and link duplicates to one root cause when appropriate.
 
-Confirmed requires a defensible attack path and observed impact or complete source
+For security-vulnerability records only, confirmed requires a defensible attack path and observed impact or complete source
 reasoning. Reproduction is preferred, not fabricated when runtime is unavailable.
 Record whether validation is runtime or source-based and its limits. Suspected needs
 next steps; refuted needs specific counterevidence. Accepted-risk requires an explicit
@@ -16,3 +16,5 @@ owner decision and keeps the risk visible. Fixed needs post-change verification.
 Avoid invented CVSS scores/CVEs. If CVSS is used, specify version and full vector.
 Use CWE only when the classification fits; it is optional. Keep hardening observations
 separate when no security impact can be established. Redact secrets and personal data.
+
+Follow finding-classification.md for advisories, control gaps and bounded refutations.

@@ -30,14 +30,16 @@ def schema_errors(value, schema, path="$ "):
 
 def validate(directory, final=False):
     directory = Path(directory)
-    errors, data = [], {}
+    errors, data, versions = [], {}, {}
     for name in ("coverage", "findings", "tool-runs"):
         try:
             value = json.loads((directory / (name + ".json")).read_text(encoding="utf-8"))
             schema = json.loads((SCHEMAS / (name + ".schema.json")).read_text(encoding="utf-8"))
             problems = schema_errors(value, schema, name)
             errors.extend(problems)
-            if not problems: data[name] = value["items"]
+            if not problems:
+                data[name] = value["items"]
+                versions[name] = value["schema_version"]
         except (OSError, ValueError) as exc:
             errors.append(name + ": cannot load JSON (" + type(exc).__name__ + ")")
     for name, rows in data.items():
@@ -49,7 +51,30 @@ def validate(directory, final=False):
         if status == "reviewed" and not row["evidence"]: errors.append(row["id"] + ": reviewed requires evidence")
         if status in {"blocked", "not-applicable"} and not row["limitations"]: errors.append(row["id"] + ": requires reason/limitations")
         if final and status == "pending": errors.append(row["id"] + ": pending coverage at finalization")
+    if final and versions.get("findings") == "1.0":
+        errors.append("findings: legacy 1.0 requires manual classification migration to 1.1 before finalization")
     for row in data.get("findings", []):
+        if versions.get("findings") == "1.1":
+            for field in ("kind", "verification_basis", "exploitability", "severity_rationale", "verification_limits", "refutation_scope"):
+                if field not in row:
+                    errors.append(row["id"] + ": requires " + field)
+            for field in ("severity_rationale", "verification_limits"):
+                if not row.get(field, "").strip():
+                    errors.append(row["id"] + ": requires nonempty " + field)
+            if row.get("kind") == "security-vulnerability" and row["status"] in {"confirmed", "accepted-risk", "fixed"}:
+                if row.get("verification_basis") not in {"source-trace", "runtime-test"}:
+                    errors.append(row["id"] + ": confirmed vulnerability requires source trace or runtime verification")
+                if row.get("exploitability") not in {"demonstrated", "supported-by-source"}:
+                    errors.append(row["id"] + ": confirmed vulnerability requires established exploitability")
+                if not row["locations"]:
+                    errors.append(row["id"] + ": confirmed vulnerability requires precise locations")
+                if not row["counterevidence"].strip():
+                    errors.append(row["id"] + ": confirmed vulnerability requires consideration of defenses")
+            if row.get("exploitability") == "demonstrated" and row.get("verification_basis") != "runtime-test":
+                errors.append(row["id"] + ": demonstrated exploitability requires runtime test")
+            if row["status"] == "refuted" and not row.get("refutation_scope", "").strip():
+                errors.append(row["id"] + ": refuted requires bounded refutation_scope")
+
         if any(cid not in coverage_ids for cid in row["coverage_ids"]): errors.append(row["id"] + ": unknown coverage reference")
         if row["status"] in {"confirmed", "accepted-risk", "fixed"} and not row["evidence"]: errors.append(row["id"] + ": requires evidence")
         required_text = {"suspected": "next_steps", "refuted": "counterevidence", "accepted-risk": "risk_acceptance", "fixed": "fix_verification"}.get(row["status"])

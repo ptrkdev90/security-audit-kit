@@ -36,7 +36,12 @@ valid target; record it and retain sanitized patch metadata or hashes if needed 
 reproducibility. Recheck the snapshot before finalizing; re-review changed files.
 Read [Scope and coverage](references/scope-and-coverage.md).
 
-Create a fresh output directory outside tracked target source, using an absolute path.
+Create a fresh durable output directory outside tracked target source, using an absolute
+path. Honor the user's destination. Otherwise use a new timestamped sibling audit directory
+under the target's durable parent, unless that parent is temporary or another repository.
+If no durable writable destination is available, ask for one while continuing review.
+Session scratchpads and /tmp are intermediate storage only. Verify final artifact files
+exist in the durable destination and report its absolute path. Never overwrite prior audits.
 Resolve this skill's directory from its actual installed location, never the target's
 current directory. Run the Python helpers from that location (Windows: `py -3`):
 
@@ -83,7 +88,8 @@ Keep raw outputs local; sanitize before sharing. Never invoke `audit fix` automa
 
 ## 5. Verify and triage
 
-Read [Finding verification](references/verification.md). Every scanner hit starts as
+Read [Finding classification](references/finding-classification.md) and
+[Finding verification](references/verification.md). Use findings schema 1.1. Every scanner hit starts as
 `suspected`. Inspect reachability, attacker-controlled input, prerequisites, defenses,
 actual impact and counterevidence. Create a minimal safe test when appropriate.
 Separate severity from confidence. Search for variants of each confirmed root cause.
@@ -125,6 +131,15 @@ or signer identities. Export and visually inspect `report.pdf` with available to
 Record missing rendering capability as a gap and retain the Markdown report.
 Never claim a signature or approval from a placeholder.
 
-Finish with important confirmed risks, pending suspicions, limitations and report path.
+Before closing, reconcile report IDs, kinds, status and severity with findings.json;
+ensure counts distinguish scanner alerts from advisories and application vulnerabilities.
+Check that claims of refutation are bounded, suspected impacts conditional, and all
+blocked runtime/deployment checks visible in the executive outcome. Distinguish audit
+work completion from report review/approval. State whether the optional PDF was requested,
+produced and visually checked. Do not silently promise export when tools are absent.
+Finish in the requested language with confirmed vulnerabilities, dependency advisories,
+control/hardening observations, unresolved candidates, limitations and durable report path.
+Keep progress concise and use shell-safe quoted paths/globs; after a failed command,
+record it and correct the syntax rather than counting the failure as a completed check.
 If interrupted, preserve `checkpoint.md` with completed work, next checks and blockers.
 Resume from these artifacts; do not restart or invent completion.

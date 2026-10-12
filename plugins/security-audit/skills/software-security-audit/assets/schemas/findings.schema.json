@@ -3,7 +3,10 @@
   "type": "object",
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "enum": [
+        "1.0",
+        "1.1"
+      ]
     },
     "items": {
       "type": "array",
@@ -70,7 +73,7 @@
               ],
               "additionalProperties": false
             },
-            "minItems": 1
+            "minItems": 0
           },
           "coverage_ids": {
             "type": "array",
@@ -118,6 +121,44 @@
             "type": "string"
           },
           "fix_verification": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "security-vulnerability",
+              "dependency-advisory",
+              "control-gap",
+              "hardening",
+              "evidence-gap"
+            ]
+          },
+          "verification_basis": {
+            "type": "string",
+            "enum": [
+              "source-trace",
+              "runtime-test",
+              "scanner-output",
+              "configuration-inspection",
+              "documentary-evidence"
+            ]
+          },
+          "exploitability": {
+            "type": "string",
+            "enum": [
+              "demonstrated",
+              "supported-by-source",
+              "unassessed",
+              "not-applicable"
+            ]
+          },
+          "severity_rationale": {
+            "type": "string"
+          },
+          "verification_limits": {
+            "type": "string"
+          },
+          "refutation_scope": {
             "type": "string"
           }
         },

@@ -1,6 +1,9 @@
 # AUD-001: Title
 
-- Status / severity / confidence:
+- Kind / status / severity / confidence:
+- Severity rationale:
+- Verification basis / exploitability:
+- Verification limits / bounded refutation scope:
 - Component / snapshot / file and line:
 - CWE (optional):
 - Attacker control and prerequisites:

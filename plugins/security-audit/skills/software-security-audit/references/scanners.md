@@ -40,3 +40,12 @@ avoid resolving/installing unknown packages just to produce a report.
 
 No scanner is mandatory across all stacks. If an essential security domain lacks a
 working tool, perform manual checks where possible and mark the residual gap.
+
+## Interpret counts and failures
+
+Record raw scanner counts separately from unique advisories, package instances and
+confirmed application findings. Classify dependency hits using finding-classification.md.
+An exit code can signal findings (for example npm audit), execution failure or partial
+analysis; interpret the tool's actual output rather than treating every nonzero exit as
+unavailable. A failed glob or malformed command is not a successful empty scan. Correct
+shell quoting and rerun, preserve the failure record and report residual coverage gaps.

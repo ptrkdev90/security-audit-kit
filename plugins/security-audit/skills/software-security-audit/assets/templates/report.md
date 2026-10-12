@@ -14,9 +14,19 @@ Commit, dirty state, dates, environments, exclusions and authorization boundarie
 ## Architecture and threat model
 Assets, actors, trust boundaries and high-risk flows.
 
-## Confirmed findings
+## Confirmed application vulnerabilities
 | ID | Severity | Component | Impact | Evidence | Remediation |
 |---|---|---|---|---|---|
+
+## Dependency advisories
+Separate raw alerts, unique advisories and affected packages. Include production/dev
+paths and assessed reachability. Confirmed advisory does not mean confirmed exploit.
+
+## Control gaps and hardening
+State inspected scope, expected control and supported impact. Do not invent SOC 2 ranking.
+
+## Missing evidence
+State unanswered questions and evidence needed; do not assert control failure.
 
 ## Unresolved candidates and accepted risk
 Retain prerequisites, missing evidence and explicit owner decisions.

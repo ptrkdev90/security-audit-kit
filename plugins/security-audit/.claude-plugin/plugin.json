@@ -1,6 +1,6 @@
 {
   "name": "security-audit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Whole-project software security audits with evidence, scanner triage and explicit coverage",
   "license": "MIT"
 }

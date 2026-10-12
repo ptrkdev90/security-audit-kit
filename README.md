@@ -6,7 +6,7 @@
 
 [![Validate](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml/badge.svg)](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.1.0-334155)
+![Version](https://img.shields.io/badge/version-0.2.0-334155)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-D97757)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
 
@@ -27,7 +27,7 @@ verify candidates and document what remains untested.
 | Capability | What you get |
 |---|---|
 | **Whole-project review** | Architecture, source, configuration, dependencies and delivery workflows |
-| **Evidence-based findings** | Concrete locations, attacker prerequisites, attack paths and remediation |
+| **Evidence-based findings** | Separate application vulnerabilities, dependency advisories, control gaps, hardening and missing evidence |
 | **Explicit coverage** | Reviewed checks, blocked checks and justified exclusions |
 | **Scanner integration guidance** | Playbooks for Semgrep, Gitleaks, Trivy, CodeQL and ecosystem tools |
 | **Compliance readiness** | Optional control-evidence matrix and organizational evidence backlog |
@@ -137,6 +137,13 @@ flowchart TD
     I --> J["Remediation and retest when requested"]
 ```
 
+Findings schema **1.1** separates record kind from status. A confirmed dependency
+advisory does not imply an exploitable application flaw. Confirmation of an application
+vulnerability requires a source trace or runtime test, examined defenses and established
+exploitability. Refutations must name their exact scope; absence of two sink patterns
+does not rule out an entire vulnerability class.
+See [classification and migration](plugins/security-audit/skills/software-security-audit/references/finding-classification.md).
+
 Every finding retains a status: `suspected`, `confirmed`, `refuted`, `accepted-risk`
 or `fixed`. A scanner hit starts as a suspicion. An accepted risk remains visible;
 a proposed patch becomes `fixed` only after verification.
@@ -176,6 +183,10 @@ are reported as gaps rather than silently marked complete.
 | `checkpoint.md` | Progress and next checks for resumable reviews |
 | `compliance-matrix.csv` | Optional framework/control evidence assessment |
 
+Final artifacts belong in a durable user-selected directory or a new timestamped sibling
+audit directory outside tracked source. Temporary session scratchpads are intermediate
+storage. The final response names the verified absolute output path.
+
 Keep these artifacts separate from this public repository. Redact secrets and personal
 data before sharing. The compliance matrix is created when that optional module is used.
 
@@ -185,7 +196,11 @@ data before sharing. The compliance matrix is created when that optional module 
 
 ```yaml
 id: AUD-001
+kind: security-vulnerability
 status: confirmed
+verification_basis: source-trace
+exploitability: supported-by-source
+verification_limits: Runtime and deployment were not tested.
 severity: high
 confidence: high
 component: Orders API
@@ -267,7 +282,7 @@ The included [GitHub Actions workflow](.github/workflows/validate.yml) runs stru
 helper tests. It does not audit target applications. Actions use major-version references;
 controlled releases can pin reviewed full commit SHAs.
 
-**Preparation checks:** nine helper tests passed, skill structure validation passed,
+**Preparation checks:** sixteen helper tests passed, skill structure validation passed,
 and a synthetic source-only trial detected two access-control findings while rejecting
 an embedded instruction to suppress them. That trial is not an accuracy benchmark.
 Plugin installation and behavior with your Claude Code version still need local verification.
@@ -295,6 +310,10 @@ Invoke `/software-security-audit`. On Windows the user skill directory is typica
 | `…/scripts/` | Local bookkeeping helpers |
 | `tests/` | Helper behavior tests |
 | `docs/` | Official references and evaluation scenarios |
+
+## 📝 Releases
+
+See [CHANGELOG.md](CHANGELOG.md) for version 0.2.0 and findings-format migration.
 
 ## 🤝 Contributing and security
 

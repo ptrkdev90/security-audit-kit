@@ -29,3 +29,9 @@ until checked against the selected version. Keep an organizational evidence back
 A formal SOC 2 report is issued through a qualified CPA examination, not by this skill.
 Other frameworks have different certification/legal processes. Report this work as a
 technical review and optional readiness/evidence assessment, never as certified compliance.
+
+Do not equate missing repository CI checks with a failed organizational control.
+External CI, branch controls and operational evidence may be unavailable. Record scope
+and missing evidence. Do not rank a gap as the largest SOC 2 issue without a defensible
+assessment basis and sufficiently complete scope. Criteria not verified against the
+selected authoritative version remain unmapped; a source-only draft is acceptable.
