@@ -1,0 +1,39 @@
+{
+  "report_title": "Software Security Audit",
+  "report_id": null,
+  "report_version": "1.0",
+  "report_status": "Draft",
+  "project_name": null,
+  "snapshot": {
+    "commit": null,
+    "dirty": null
+  },
+  "audit_started_at": null,
+  "audit_ended_at": null,
+  "generated_at": null,
+  "display_timezone": "UTC",
+  "prepared_by": {
+    "name": null,
+    "organization": null
+  },
+  "reviewed_by": {
+    "name": null,
+    "reviewed_at": null
+  },
+  "approved_by": {
+    "name": null,
+    "approved_at": null
+  },
+  "confidentiality": null,
+  "template": {
+    "skill_name": null,
+    "source_file": null
+  },
+  "signature": {
+    "status": "unsigned",
+    "type": "none",
+    "signer": null,
+    "signed_at": null,
+    "verification_result": null
+  }
+}
