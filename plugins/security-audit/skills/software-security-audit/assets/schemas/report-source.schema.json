@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "executive_outcome": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "threat_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "remediation_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "compliance_summary": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "executive_outcome",
+    "scope_summary",
+    "threat_summary",
+    "limitations",
+    "remediation_summary",
+    "compliance_summary"
+  ],
+  "additionalProperties": false
+}

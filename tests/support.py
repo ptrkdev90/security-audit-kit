@@ -30,4 +30,8 @@ def complete(directory):
     write(directory, 'findings.json', {'schema_version': '1.2', 'items': [finding]})
     for name in ('scope.md', 'threat-model.md', 'report.md'):
         (directory / name).write_text('# Synthetic audit\n\nSource-only scope; runtime blocked. AUD-1 is supported by source.\n', encoding='utf-8')
+    write(directory, 'report-source.json', {'schema_version': '1.0', 'executive_outcome': 'Source-supported cross-user access. Runtime checks blocked.', 'scope_summary': 'Synthetic API source and unavailable deployment', 'threat_summary': 'Authenticated user can choose another owner’s order ID', 'limitations': ['Source-only; no runtime access'], 'remediation_summary': 'Scope object query and retest authorized test environment', 'compliance_summary': 'Not requested'})
+    metadata = json.loads((directory / 'report-metadata.json').read_text())
+    metadata.update(report_id='SYNTHETIC-1', project_name='Synthetic API', audit_started_at='2026-10-12T19:00:00Z', audit_ended_at='2026-10-12T20:00:00Z', generated_at='2026-10-12T20:01:00Z', snapshot={'commit':'a'*40,'dirty':False})
+    write(directory, 'report-metadata.json', metadata)
     return finding

@@ -167,6 +167,47 @@ def validate(directory, final=False):
                     errors.append("audit-plan: final audit needs threats and required domains")
         except (OSError, ValueError) as exc:
             errors.append("audit-plan: cannot load JSON (" + type(exc).__name__ + ")")
+    if versions.get("findings") == "1.2":
+        for record in ("report-source", "report-metadata"):
+            try:
+                value = json.loads((directory / (record + ".json")).read_text(encoding="utf-8"))
+                schema = json.loads((SCHEMAS / (record + ".schema.json")).read_text(encoding="utf-8"))
+                problems = schema_errors(value, schema, record)
+                errors.extend(problems)
+                if not problems and final:
+                    if record == "report-source":
+                        if any("Replace with" in str(v) for v in value.values()):
+                            errors.append("report-source: unresolved starter text")
+                    else:
+                        from datetime import datetime
+                        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+                        try: ZoneInfo(value["display_timezone"])
+                        except ZoneInfoNotFoundError: errors.append("report-metadata: unknown timezone")
+                        dates = {}
+                        for key in ("audit_started_at", "audit_ended_at", "generated_at"):
+                            try:
+                                dates[key] = datetime.fromisoformat((value[key] or "").replace("Z", "+00:00"))
+                                if dates[key].tzinfo is None: raise ValueError()
+                            except (ValueError, TypeError): errors.append("report-metadata: requires timestamp " + key)
+                        if len(dates) == 3 and all(v.tzinfo is not None for v in dates.values()) and not (dates["audit_started_at"] <= dates["audit_ended_at"] <= dates["generated_at"]):
+                            errors.append("report-metadata: invalid audit timestamp order")
+                        if not value["report_id"] or not value["project_name"]:
+                            errors.append("report-metadata: report ID and project required")
+                        for key, date_key in (("reviewed_by", "reviewed_at"), ("approved_by", "approved_at")):
+                            signoff = value[key]
+                            if signoff["name"] or signoff[date_key]:
+                                if not signoff["name"] or not signoff[date_key] or not signoff["evidence_ids"]:
+                                    errors.append("report-metadata: sign-off requires identity, date and evidence")
+                            if any(ref not in evidence for ref in signoff["evidence_ids"]): errors.append("report-metadata: unknown sign-off evidence")
+                        signature = value["signature"]
+                        if signature["status"] == "unsigned":
+                            if signature["type"] != "none" or any(signature[k] is not None for k in ("signer", "signed_at", "verification_result")) or signature["evidence_ids"]:
+                                errors.append("report-metadata: unsigned state contradicts signature fields")
+                        elif not signature["signer"] or not signature["signed_at"] or not signature["evidence_ids"]:
+                            errors.append("report-metadata: signature requires authorized evidence")
+                        if any(ref not in evidence for ref in signature["evidence_ids"]): errors.append("report-metadata: unknown signature evidence")
+            except (OSError, ValueError) as exc:
+                errors.append(record + ": cannot load JSON (" + type(exc).__name__ + ")")
     if final:
         if not data.get("coverage"): errors.append("Final audit requires nonempty coverage")
         for name in ("inventory.json", "scope.md", "threat-model.md", "report.md"):
