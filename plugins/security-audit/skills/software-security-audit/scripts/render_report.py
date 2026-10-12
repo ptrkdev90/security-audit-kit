@@ -37,7 +37,7 @@ def sections(model):
     dates = {}
     for key in ('audit_started_at','audit_ended_at','generated_at'):
         dates[key] = datetime.fromisoformat(meta[key].replace('Z','+00:00')).astimezone(ZoneInfo(meta['display_timezone'])).isoformat() + ' [' + meta['display_timezone'] + ']'
-    cover = dict(meta, **dates)
+    cover = {'project':meta['project_name'],'report_id':meta['report_id'],'report_version':meta['report_version'],'report_status':meta['report_status'],'snapshot':meta['snapshot'],**dates,'prepared_by':meta['prepared_by'],'confidentiality':meta['confidentiality'],'signature_status':meta['signature']['status']}
     return [('cover',meta['report_title'],cover),
             ('outcome',LABELS[meta['language']]['outcome'],narrative['executive_outcome']),
             ('counts',LABELS[meta['language']]['counts'],model['counts']),
@@ -50,7 +50,7 @@ def sections(model):
             ('evidence',LABELS[meta['language']]['evidence'],model['evidence']),
             ('remediation',LABELS[meta['language']]['remediation'],narrative['remediation_summary']),
             ('compliance',LABELS[meta['language']]['compliance'],narrative['compliance_summary']),
-            ('signoff',LABELS[meta['language']]['signoff'],{'prepared_by':meta['prepared_by'],'reviewed_by':meta['reviewed_by'],'approved_by':meta['approved_by'],'signature':meta['signature']})]
+            ('signoff',LABELS[meta['language']]['signoff'],{'prepared_by':meta['prepared_by'],'reviewed_by':meta['reviewed_by'],'approved_by':meta['approved_by'],'signature':meta['signature'],'full_metadata':meta})]
 
 
 def markdown(model):
@@ -82,8 +82,12 @@ def html_report(model, theme=None):
         if sid == 'threats':
             try: extra = '<figure>'+svg(model['architecture'])+'<figcaption>'+esc('Observed flows are solid; uncertain flows are dashed. Full evidence and limitations follow.')+'</figcaption></figure>'
             except ValueError: extra = '<p>Diagram omitted: split large architecture into smaller views. Complete model follows.</p>'
+        content = details(data)
+        if sid == 'counts':
+            statuses = ['suspected','confirmed','refuted','accepted-risk','fixed']
+            content = '<table><thead><tr><th>Kind</th>'+''.join('<th>'+esc(k)+'</th>' for k in statuses)+'</tr></thead><tbody>'+''.join('<tr><th>'+esc(kind)+'</th>'+''.join('<td>'+str(counts[k])+'</td>' for k in statuses)+'</tr>' for kind,counts in data.items())+'</tbody></table>'
         heading = 'h1' if sid == 'cover' else 'h2'
-        blocks.append(f'<section id="{sid}"><{heading}>{esc(title)}</{heading}>{extra}{details(data)}</section>')
+        blocks.append(f'<section id="{sid}"><{heading}>{esc(title)}</{heading}>{extra}{content}</section>')
     css = f'''@page {{ size: A4; margin: 18mm; @bottom-center {{content: counter(page) " / " counter(pages); font-size: 9pt;}} }}
 :root {{ --accent: {theme['accent_color']}; }}
 * {{box-sizing:border-box}} body {{margin:0;background:#e2e8f0;color:#172033;font:15px/1.55 {theme['font_family']};}}
@@ -93,6 +97,7 @@ section {{margin:32px 0;scroll-margin-top:20px}} #cover {{border-top:8px solid v
 nav ul {{display:flex;flex-wrap:wrap;gap:8px 24px;padding-left:20px}} a {{color:var(--accent)}}
 dl {{display:grid;grid-template-columns:190px minmax(0,1fr);gap:8px 20px;}} dt {{font-weight:bold;overflow-wrap:anywhere}} dd {{margin:0;min-width:0;}}
 pre,.prose {{white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;margin:0;font:inherit;}}
+table {{border-collapse:collapse;width:100%;font-size:13px}} th,td {{text-align:left;padding:6px;border-bottom:1px solid #cbd5e1;overflow-wrap:anywhere}}
 article {{border:1px solid #cbd5e1;border-left:4px solid var(--accent);padding:20px;margin:16px 0;}}
 svg {{width:100%;height:auto}} figure {{margin:20px 0}} figcaption {{font-size:13px;color:#475569}}
 @media(max-width:700px) {{main {{margin:0;padding:20px}} dl {{grid-template-columns:1fr}} dt {{margin-top:12px}}}}
