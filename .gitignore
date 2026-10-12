@@ -7,3 +7,6 @@ audit-output/
 .env
 .env.*
 !.env.example
+
+# Disposable local test directories
+tmp*/

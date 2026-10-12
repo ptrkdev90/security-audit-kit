@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0-rc.1
+
+- All planned feature commits integrated; 73 local helper/pipeline tests passed.
+- Pinned multi-version Python/PDF CI and opt-in isolated Claude install/update smoke test.
+- Release-boundary tagging and consolidated public documentation.
+- Stable 1.0.0 awaits live Claude audit behavior and a real user-template trial.
+- Actual model-token savings, PDF/A/PDF/UA conformity and detection accuracy are not claimed.
+
+
 ## 0.7.0
 
 - Audience/glossary and editorial guidance; documented accessibility/archival limits.
