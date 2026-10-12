@@ -32,6 +32,7 @@ verify candidates and document what remains untested.
 | **Scanner integration guidance** | Playbooks for Semgrep, Gitleaks, Trivy, CodeQL and ecosystem tools |
 | **Compliance readiness** | Optional control-evidence matrix and organizational evidence backlog |
 | **Portable artifacts** | Markdown reports, JSON records and a CSV compliance matrix |
+| **Template-based PDF reports** | Optional user-selected Claude document templates, cover metadata and sign-off fields |
 
 This repository provides one standalone skill and three local Python helpers. Scanner
 binaries and rules are installed separately. No Trail of Bits installation is required;
@@ -77,6 +78,48 @@ organisatorische Nachweise und fehlende Informationen. Dokumentiere Prüflücken
 **Requirements:** Claude Code with plugin/skill support. Python 3.10+ is required for
 the helpers; they use only the standard library. Git and relevant scanners are optional
 capabilities whose absence must appear in the audit limitations.
+
+## 🎨 Your template, your PDF report
+
+Use an installed Claude document/template skill or provide your own template file
+to produce a branded audit PDF. Templates control presentation; the evidence,
+findings and coverage limitations remain intact.
+
+```text
+/security-audit:software-security-audit
+Audit this project and write the report in English.
+Use my installed document template skill "<your-template-skill>" for the PDF.
+Include a cover, report ID, version, audit period, generation timestamp,
+page numbers, and an unsigned review/sign-off section.
+Prepared by: <your name>
+Organization: <your organization>
+Display timezone: Europe/Berlin
+Keep the Markdown report and structured evidence alongside the PDF.
+Do not modify application code.
+```
+
+You can instead specify an accessible template file, such as
+`./audit-template.docx`, and a user-supplied logo. The agent follows the selected
+template's supported export workflow; no universal Claude template API is assumed.
+
+| Document element | Behavior |
+|---|---|
+| **Cover** | Project, report ID/version, Draft/Final, snapshot and confidentiality |
+| **Timestamp** | Separate audit period and generation time, with explicit timezone |
+| **Author** | User-provided auditor name and organization |
+| **Review and signature** | Unsigned fields by default; no invented approval or signature |
+| **PDF quality** | Page rendering, layout inspection and source-to-export checks |
+
+**Requirements:** an accessible template and installed document/PDF rendering tools
+for custom exports. Without a selected template, use a neutral default layout.
+If rendering is unavailable, the agent delivers Markdown and metadata and records
+PDF export as blocked. This plugin supplies instructions, not a bundled PDF engine
+or a built-in Claude Design integration.
+
+A signature image requires the signer's explicit authorization for that report.
+Certificate-based digital signing requires a separate authorized signing workflow.
+A name, image or signature line alone is not a verified digital signature.
+See [template and PDF workflow](plugins/security-audit/skills/software-security-audit/references/pdf-reports.md).
 
 ## 🧭 Audit workflow
 
@@ -127,6 +170,9 @@ are reported as gaps rather than silently marked complete.
 | `tool-runs.json` | Tool versions, commands, outcomes and execution limitations |
 | `findings.json` | Structured candidates, verified findings and remediation |
 | `report.md` | Human-readable audit results and priorities |
+| `report.pdf` | Optional designed PDF from an available renderer |
+| `report-metadata.json` | Optional cover, author, template and sign-off metadata |
+| `pdf-export.md` | Optional export checks, signature status and rendering limitations |
 | `checkpoint.md` | Progress and next checks for resumable reviews |
 | `compliance-matrix.csv` | Optional framework/control evidence assessment |
 
