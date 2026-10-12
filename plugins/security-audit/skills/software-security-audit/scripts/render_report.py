@@ -44,7 +44,7 @@ def sections(model):
             ('outcome',LABELS[meta['language']]['outcome'],narrative['executive_outcome']),
             ('counts',LABELS[meta['language']]['counts'],model['counts']),
             ('limits',LABELS[meta['language']]['limits'],{'report':narrative['limitations'],'inventory':model['limitations'],'architecture':model['architecture']['limitations'],'plan':model['plan']['limitations'],'blocked_checks':[{'id':r['id'],'check':r['check'],'limitations':r['limitations']} for r in model['coverage'] if r['status']=='blocked']}),
-            ('scope',LABELS[meta['language']]['scope'],{'summary':narrative['scope_summary'],'snapshot':meta['snapshot'],'scope_document':model['scope_document']}),
+            ('scope',LABELS[meta['language']]['scope'],{'audience':narrative.get('audience',[]),'glossary':narrative.get('glossary',[]),'summary':narrative['scope_summary'],'snapshot':meta['snapshot'],'scope_document':model['scope_document']}),
             ('threats',LABELS[meta['language']]['threats'],{'summary':narrative['threat_summary'],'architecture':model['architecture'],'threats':model['plan']['threats'],'threat_document':model['threat_document']}),
             ('findings',LABELS[meta['language']]['findings'],model['findings']),
             ('coverage',LABELS[meta['language']]['coverage'],model['coverage']),

@@ -67,7 +67,7 @@ def export_pdf(audit, output, theme_path=None, font_path=None):
         if sid=='counts':
             columns=['kind','suspected','confirmed','refuted','accepted-risk','fixed']
             rows=[[paragraph(c) for c in columns]]+[[paragraph(kind),*[paragraph(counts[k]) for k in columns[1:]]] for kind,counts in data.items()]
-            table=Table(rows,colWidths=[145,55,55,45,65,40],repeatRows=1,hAlign='LEFT')
+            table=Table(rows,colWidths=[160,70,70,60,80,59],repeatRows=1,hAlign='LEFT')
             table.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('BACKGROUND',(0,0),(-1,0),colors.HexColor('#eef2ff')),('LINEBELOW',(0,0),(-1,-1),.3,colors.HexColor('#cbd5e1'))]))
             story.append(table); story.append(Spacer(1,10))
         else:
