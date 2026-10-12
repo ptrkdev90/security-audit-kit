@@ -1,0 +1,4 @@
+interface:
+  display_name: "Software Security Audit"
+  short_description: "Audit projects with evidence and explicit coverage"
+  default_prompt: "Use $software-security-audit to audit this software project and report verified findings and coverage gaps."

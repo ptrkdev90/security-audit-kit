@@ -1,0 +1,14 @@
+{
+  "name": "security-audit-kit",
+  "owner": {
+    "name": "Security Audit Kit Maintainers"
+  },
+  "plugins": [
+    {
+      "name": "security-audit",
+      "source": "./plugins/security-audit",
+      "description": "Evidence-based whole-project software security audits",
+      "version": "0.1.0"
+    }
+  ]
+}

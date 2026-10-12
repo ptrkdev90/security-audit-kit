@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "suspected",
+              "confirmed",
+              "refuted",
+              "accepted-risk",
+              "fixed"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low",
+              "informational"
+            ]
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "component": {
+            "type": "string",
+            "minLength": 1
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "path",
+                "line"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "coverage_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "prerequisites": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attack_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "impact": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verification": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 0
+          },
+          "counterevidence": {
+            "type": "string"
+          },
+          "remediation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "next_steps": {
+            "type": "string"
+          },
+          "risk_acceptance": {
+            "type": "string"
+          },
+          "fix_verification": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status",
+          "severity",
+          "confidence",
+          "component",
+          "locations",
+          "coverage_ids",
+          "prerequisites",
+          "attack_path",
+          "impact",
+          "verification",
+          "evidence",
+          "counterevidence",
+          "remediation",
+          "next_steps",
+          "risk_acceptance",
+          "fix_verification"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "items"
+  ],
+  "additionalProperties": false
+}

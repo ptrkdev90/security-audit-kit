@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+"""Validate artifact structure and consistency, not vulnerability correctness."""
+import argparse
+import json
+from pathlib import Path
+
+SCHEMAS = Path(__file__).resolve().parents[1] / "assets" / "schemas"
+
+def schema_errors(value, schema, path="$ "):
+    errors = []
+    kinds = {"object": lambda v: isinstance(v, dict), "array": lambda v: isinstance(v, list), "string": lambda v: isinstance(v, str), "integer": lambda v: isinstance(v, int) and not isinstance(v, bool), "null": lambda v: v is None}
+    expected = schema.get("type")
+    if expected and not any(kinds[k](value) for k in ([expected] if isinstance(expected, str) else expected)):
+        return [path + ": invalid type"]
+    if "const" in schema and value != schema["const"]: errors.append(path + ": invalid constant")
+    if "enum" in schema and value not in schema["enum"]: errors.append(path + ": invalid enum")
+    if isinstance(value, dict):
+        for key in schema.get("required", []):
+            if key not in value: errors.append(path + ": missing " + key)
+        properties = schema.get("properties", {})
+        if schema.get("additionalProperties") is False:
+            for key in value.keys() - properties.keys(): errors.append(path + ": unknown " + key)
+        for key in value.keys() & properties.keys(): errors.extend(schema_errors(value[key], properties[key], path + "." + key))
+    if isinstance(value, list):
+        if len(value) < schema.get("minItems", 0): errors.append(path + ": too few items")
+        for i, item in enumerate(value): errors.extend(schema_errors(item, schema.get("items", {}), path + f"[{i}]"))
+    if isinstance(value, str) and len(value.strip()) < schema.get("minLength", 0): errors.append(path + ": empty text")
+    if isinstance(value, int) and not isinstance(value, bool) and value < schema.get("minimum", value): errors.append(path + ": below minimum")
+    return errors
+
+def validate(directory, final=False):
+    directory = Path(directory)
+    errors, data = [], {}
+    for name in ("coverage", "findings", "tool-runs"):
+        try:
+            value = json.loads((directory / (name + ".json")).read_text(encoding="utf-8"))
+            schema = json.loads((SCHEMAS / (name + ".schema.json")).read_text(encoding="utf-8"))
+            problems = schema_errors(value, schema, name)
+            errors.extend(problems)
+            if not problems: data[name] = value["items"]
+        except (OSError, ValueError) as exc:
+            errors.append(name + ": cannot load JSON (" + type(exc).__name__ + ")")
+    for name, rows in data.items():
+        ids = [r["id"] for r in rows]
+        if len(ids) != len(set(ids)): errors.append(name + ": duplicate IDs")
+    coverage_ids = {r["id"] for r in data.get("coverage", [])}
+    for row in data.get("coverage", []):
+        status = row["status"]
+        if status == "reviewed" and not row["evidence"]: errors.append(row["id"] + ": reviewed requires evidence")
+        if status in {"blocked", "not-applicable"} and not row["limitations"]: errors.append(row["id"] + ": requires reason/limitations")
+        if final and status == "pending": errors.append(row["id"] + ": pending coverage at finalization")
+    for row in data.get("findings", []):
+        if any(cid not in coverage_ids for cid in row["coverage_ids"]): errors.append(row["id"] + ": unknown coverage reference")
+        if row["status"] in {"confirmed", "accepted-risk", "fixed"} and not row["evidence"]: errors.append(row["id"] + ": requires evidence")
+        required_text = {"suspected": "next_steps", "refuted": "counterevidence", "accepted-risk": "risk_acceptance", "fixed": "fix_verification"}.get(row["status"])
+        if required_text and not row[required_text].strip(): errors.append(row["id"] + ": requires " + required_text)
+    for row in data.get("tool-runs", []):
+        if row["status"] in {"completed", "failed"} and row["exit_code"] is None: errors.append(row["id"] + ": missing exit code")
+        if row["status"] in {"failed", "unavailable"} and not row["limitations"]: errors.append(row["id"] + ": requires execution limitation")
+    if final:
+        if not data.get("coverage"): errors.append("Final audit requires nonempty coverage")
+        for name in ("inventory.json", "scope.md", "threat-model.md", "report.md"):
+            path = directory / name
+            if not path.is_file() or not path.read_text(encoding="utf-8").strip(): errors.append("Missing or empty " + name)
+    return errors
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("directory")
+    parser.add_argument("--final", action="store_true")
+    args = parser.parse_args()
+    errors = validate(args.directory, args.final)
+    for error in errors: print(error)
+    if not errors: print("Artifact structure valid; factual security claims are not verified.")
+    raise SystemExit(1 if errors else 0)
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,277 @@
+<div align="center">
+
+# 🛡️ Software Security Audit
+
+**Whole-project security reviews for Claude Code — with evidence, verified findings and explicit coverage.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Version](https://img.shields.io/badge/version-0.1.0-334155)
+![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-D97757)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
+
+Architecture · Code · Dependencies · Configuration · CI/CD · Compliance evidence
+
+[Quick start](#-quick-start) · [Workflow](#-audit-workflow) · [Coverage](#-review-coverage) · [SOC 2](#-soc-2-and-compliance-readiness) · [Development](#-development-and-validation)
+
+</div>
+
+---
+
+## 🔍 What this toolkit does
+
+Turn a broad “audit this project” request into an inspectable review: establish the
+scope, map trust boundaries, examine relevant security domains, triage scanner results,
+verify candidates and document what remains untested.
+
+| Capability | What you get |
+|---|---|
+| **Whole-project review** | Architecture, source, configuration, dependencies and delivery workflows |
+| **Evidence-based findings** | Concrete locations, attacker prerequisites, attack paths and remediation |
+| **Explicit coverage** | Reviewed checks, blocked checks and justified exclusions |
+| **Scanner integration guidance** | Playbooks for Semgrep, Gitleaks, Trivy, CodeQL and ecosystem tools |
+| **Compliance readiness** | Optional control-evidence matrix and organizational evidence backlog |
+| **Portable artifacts** | Markdown reports, JSON records and a CSV compliance matrix |
+
+This repository provides one standalone skill and three local Python helpers. Scanner
+binaries and rules are installed separately. No Trail of Bits installation is required;
+its skills are not bundled. Reports can be written in **English or German**.
+
+## 🚀 Quick start
+
+### 1. Publish the repository
+
+Upload the contents of this folder to a GitHub repository named
+`software-security-audit`. Include both `.claude-plugin` directories. You can customize
+`owner.name` in the marketplace manifest.
+
+### 2. Install in Claude Code
+
+Run these commands in your shell. Replace `YOUR-USER` with your GitHub user or organization:
+
+```sh
+claude plugin marketplace add YOUR-USER/software-security-audit
+claude plugin install security-audit@security-audit-kit
+```
+
+The GitHub repository name is `software-security-audit`; the internal marketplace name
+is `security-audit-kit`, and the plugin name is `security-audit`.
+
+### 3. Audit a project
+
+Start Claude Code in the target project and enter:
+
+```text
+/security-audit:software-security-audit
+Audit this entire software project. Establish the architecture, scope and trust
+boundaries first. Review source code, configuration, dependencies and CI/CD.
+Verify candidate findings and document coverage gaps. Write the report in English.
+Do not modify application code. Store audit artifacts in a separate directory.
+```
+
+For a German report with optional SOC 2 readiness:
+
+```text
+/security-audit:software-security-audit
+Prüfe das gesamte Softwareprojekt und erstelle den Bericht auf Deutsch.
+Berücksichtige zusätzlich SOC-2-Readiness. Trenne technische Kontrollen,
+organisatorische Nachweise und fehlende Informationen. Dokumentiere Prüflücken.
+Ändere keinen Anwendungscode.
+```
+
+**Requirements:** Claude Code with plugin/skill support. Python 3.10+ is required for
+the helpers; they use only the standard library. Git and relevant scanners are optional
+capabilities whose absence must appear in the audit limitations.
+
+## 🧭 Audit workflow
+
+```mermaid
+flowchart TD
+    A["Scope and snapshot"] --> B["Architecture and threat model"]
+    B --> C["Coverage plan"]
+    C --> D["Source review and scanners"]
+    D --> E["Verify candidate findings"]
+    E --> F{"Evidence sufficient?"}
+    F -->|Yes| G["Confirm or refute"]
+    F -->|No| H["Retain suspicion and evidence gap"]
+    G --> I["Report and coverage validation"]
+    H --> I
+    I --> J["Remediation and retest when requested"]
+```
+
+Every finding retains a status: `suspected`, `confirmed`, `refuted`, `accepted-risk`
+or `fixed`. A scanner hit starts as a suspicion. An accepted risk remains visible;
+a proposed patch becomes `fixed` only after verification.
+
+## 🧩 Review coverage
+
+| Area | Representative checks |
+|---|---|
+| **Architecture and business logic** | Trust boundaries, privileged flows, replay, concurrency and state transitions |
+| **Web applications and APIs** | Authentication, object authorization, tenant isolation, XSS, CSRF, SSRF and uploads |
+| **.NET** | Authorization policies, middleware, binding, queries, configuration and secret handling |
+| **JavaScript / TypeScript / Python** | Unsafe sinks, parsers, subprocesses, package hooks and framework defenses |
+| **Azure and infrastructure** | Available RBAC/IaC definitions, managed identities, storage access and container exposure |
+| **CI/CD and supply chain** | Untrusted PR inputs, token permissions, artifacts, action pinning and dependency evidence |
+
+For other stacks, adapt the core checks and record analyzer limitations. This toolkit
+does not provide exhaustive language-specific coverage for every ecosystem.
+
+Source review and deployed-state verification are distinct. Missing runtime access,
+cloud evidence, submodule contents, supported scanners or current vulnerability feeds
+are reported as gaps rather than silently marked complete.
+
+## 📦 Audit outputs
+
+| Artifact | Purpose |
+|---|---|
+| `scope.md` | Snapshot, boundaries, exclusions and execution authorization |
+| `inventory.json` | File metadata, stack indicators, Git state and available tools |
+| `threat-model.md` | Assets, actors, trust boundaries and abuse cases |
+| `coverage.json` | Component/check records with evidence and limitations |
+| `tool-runs.json` | Tool versions, commands, outcomes and execution limitations |
+| `findings.json` | Structured candidates, verified findings and remediation |
+| `report.md` | Human-readable audit results and priorities |
+| `checkpoint.md` | Progress and next checks for resumable reviews |
+| `compliance-matrix.csv` | Optional framework/control evidence assessment |
+
+Keep these artifacts separate from this public repository. Redact secrets and personal
+data before sharing. The compliance matrix is created when that optional module is used.
+
+### Example finding
+
+> **Illustrative synthetic example — not a finding about this repository.**
+
+```yaml
+id: AUD-001
+status: confirmed
+severity: high
+confidence: high
+component: Orders API
+location: src/OrdersController.cs:42
+prerequisites: An authenticated user can choose an order ID.
+attack_path: The endpoint retrieves the order without checking its owner or tenant.
+impact: A user can read another user's order.
+verification: Source trace establishes the missing check and reachable response.
+remediation: Scope the query to the authorized owner or tenant before returning data.
+```
+
+This compact example illustrates report content, not the full JSON schema. Real findings
+must inspect upstream defenses, cite evidence and state the limits of verification.
+
+## 📋 SOC 2 and compliance readiness
+
+Use the optional module when customer requirements or a future assurance engagement
+require control evidence alongside technical review.
+
+| Evidence layer | Examples | Treatment |
+|---|---|---|
+| **Technical** | Authorization checks, logging, secret handling, release configuration | Inspect available implementation and configuration |
+| **Organizational** | Access reviews, approvals, incident records, ownership | Evaluate supplied evidence and record missing records |
+| **Operational over a period** | Restore exercises, monitoring, remediation history | Require dated evidence for the agreed period |
+
+The matrix records the selected framework/version, control, source, evidence period,
+owner, assessment and next evidence needed. Criterion IDs are included only when checked
+against the authoritative framework. Missing evidence is not automatically a control failure.
+
+This is a **technical audit and optional readiness assessment**. It does not issue a SOC 2
+attestation, ISO certification or a compliance score. Formal SOC 2 reporting requires a
+qualified CPA examination. See the [official sources](docs/SOURCES.md).
+
+## ⚙️ Helpers and execution model
+
+| Helper | Behavior |
+|---|---|
+| `init_audit.py` | Creates a new audit directory; refuses to overwrite an existing one |
+| `inventory.py` | Collects file metadata without reading source contents or following symlinks |
+| `validate_audit.py` | Checks schemas, references, status requirements and finalization structure |
+
+The validator checks artifact consistency, **not the truth or completeness of security claims**.
+Inventory stack detection is heuristic; manual inspection remains necessary.
+
+Example helper commands from the repository root:
+
+```sh
+python3 plugins/security-audit/skills/software-security-audit/scripts/init_audit.py --output /absolute/path/to/new-audit
+python3 plugins/security-audit/skills/software-security-audit/scripts/inventory.py --root /absolute/path/to/project --output /absolute/path/to/new-audit/inventory.json
+python3 plugins/security-audit/skills/software-security-audit/scripts/validate_audit.py /absolute/path/to/new-audit --final
+```
+
+On Windows, use `py -3` in place of `python3` where appropriate and quote paths containing spaces.
+
+The initial workflow reads project files and writes audit artifacts. Target builds,
+tests and package hooks may execute untrusted code and need an appropriate isolated
+context. Active testing and remote services follow the authorized scope. The skill
+keeps application source unchanged unless remediation is requested and does not
+publish results automatically.
+
+## 🛠️ Development and validation
+
+Run the repository checks:
+
+```sh
+python3 scripts/validate_repository.py
+python3 -m unittest discover -s tests -v
+```
+
+Then validate and load the plugin with your installed Claude Code version:
+
+```sh
+claude plugin validate .
+claude plugin validate ./plugins/security-audit
+claude --plugin-dir ./plugins/security-audit
+```
+
+The included [GitHub Actions workflow](.github/workflows/validate.yml) runs structure and
+helper tests. It does not audit target applications. Actions use major-version references;
+controlled releases can pin reviewed full commit SHAs.
+
+**Preparation checks:** nine helper tests passed, skill structure validation passed,
+and a synthetic source-only trial detected two access-control findings while rejecting
+an embedded instruction to suppress them. That trial is not an accuracy benchmark.
+Plugin installation and behavior with your Claude Code version still need local verification.
+See [evaluation scenarios](docs/EVALUATION.md) before relying on the workflow.
+
+A live CI badge is intentionally omitted until the actual GitHub owner/repository exists.
+After publication, insert the following with your real owner:
+
+```markdown
+[![Validate](https://github.com/YOUR-USER/software-security-audit/actions/workflows/validate.yml/badge.svg)](https://github.com/YOUR-USER/software-security-audit/actions/workflows/validate.yml)
+```
+
+### Standalone skill installation
+
+Copy `plugins/security-audit/skills/software-security-audit` to either:
+
+- `.claude/skills/software-security-audit` in a project.
+- `~/.claude/skills/software-security-audit` for your user.
+
+Invoke `/software-security-audit`. On Windows the user skill directory is typically
+`C:\Users\YOUR-USER\.claude\skills`.
+
+## 🗂️ Repository guide
+
+| Path | Contents |
+|---|---|
+| `.claude-plugin/marketplace.json` | GitHub-installable marketplace catalog |
+| `plugins/security-audit/.claude-plugin/plugin.json` | Plugin manifest |
+| `plugins/security-audit/skills/software-security-audit/` | Skill instructions and agent metadata |
+| `…/references/` | Audit and technology playbooks |
+| `…/assets/` | Report templates and JSON schemas |
+| `…/scripts/` | Local bookkeeping helpers |
+| `tests/` | Helper behavior tests |
+| `docs/` | Official references and evaluation scenarios |
+
+## 🤝 Contributing and security
+
+Keep changes evidence-driven. Add relevant helper tests, check resource links and
+avoid promising coverage unsupported by the workflow. Use synthetic data in examples.
+
+For toolkit vulnerabilities, follow [SECURITY.md](SECURITY.md). Do not publish credentials,
+private source or raw audit reports in public issues.
+
+## 📄 License and sources
+
+Original instructions and helpers are available under the [MIT License](LICENSE).
+External scanners and rule packs retain their own licenses.
+
+Consult [official sources](docs/SOURCES.md) for tool documentation and framework references.
