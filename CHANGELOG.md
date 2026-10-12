@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Findings 1.2: structured evidence and threat references, typed confirmation checks.
+- Threat-driven audit plan and required-domain reconciliation.
+- Regression tests for fabricated references, scanner-only confirmation and missing scope.
+- Existing 1.1 reports remain readable; new audits use 1.2. Migrate manually before exporting.
+
+
 ## 0.2.0
 
 - Separate security vulnerabilities, dependency advisories, control gaps, hardening and evidence gaps.
