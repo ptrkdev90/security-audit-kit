@@ -33,7 +33,9 @@ def validate(directory, final=False):
     errors, data, versions = [], {}, {}
     for name in ("coverage", "findings", "tool-runs", "evidence"):
         try:
-            value = json.loads((directory / (name + ".json")).read_text(encoding="utf-8"))
+            artifact = directory / (name + ".json")
+            if artifact.is_symlink(): raise ValueError("Symlink artifact")
+            value = json.loads(artifact.read_text(encoding="utf-8"))
             schema = json.loads((SCHEMAS / (name + ".schema.json")).read_text(encoding="utf-8"))
             problems = schema_errors(value, schema, name)
             errors.extend(problems)
@@ -109,6 +111,7 @@ def validate(directory, final=False):
     architecture_flows = set()
     if (directory / "architecture.json").exists():
         try:
+            if (directory / "architecture.json").is_symlink(): raise ValueError("Symlink artifact")
             architecture = json.loads((directory / "architecture.json").read_text(encoding="utf-8"))
             arch_schema = json.loads((SCHEMAS / "architecture.schema.json").read_text(encoding="utf-8"))
             problems = schema_errors(architecture, arch_schema, "architecture")
@@ -143,6 +146,7 @@ def validate(directory, final=False):
         errors.append("architecture: missing architecture.json")
     if versions.get("findings") == "1.2":
         try:
+            if (directory / "audit-plan.json").is_symlink(): raise ValueError("Symlink artifact")
             plan = json.loads((directory / "audit-plan.json").read_text(encoding="utf-8"))
             plan_schema = json.loads((SCHEMAS / "audit-plan.schema.json").read_text(encoding="utf-8"))
             problems = schema_errors(plan, plan_schema, "audit-plan")
@@ -170,6 +174,7 @@ def validate(directory, final=False):
     if versions.get("findings") == "1.2":
         for record in ("report-source", "report-metadata"):
             try:
+                if (directory / (record + ".json")).is_symlink(): raise ValueError("Symlink artifact")
                 value = json.loads((directory / (record + ".json")).read_text(encoding="utf-8"))
                 schema = json.loads((SCHEMAS / (record + ".schema.json")).read_text(encoding="utf-8"))
                 problems = schema_errors(value, schema, record)
@@ -210,6 +215,7 @@ def validate(directory, final=False):
                 errors.append(record + ": cannot load JSON (" + type(exc).__name__ + ")")
     if (directory / "documentation-profile.json").exists():
         try:
+            if (directory / "documentation-profile.json").is_symlink(): raise ValueError("Symlink artifact")
             profile = json.loads((directory / "documentation-profile.json").read_text(encoding="utf-8"))
             schema = json.loads((SCHEMAS / "documentation-profile.schema.json").read_text())
             problems = schema_errors(profile, schema, "documentation-profile")

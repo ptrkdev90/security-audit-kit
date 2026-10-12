@@ -30,7 +30,7 @@ def build(directory):
     if records['findings.json']['schema_version'] != '1.2': raise ValueError('Migrate findings manually to 1.2 before export')
     metadata = records['report-metadata.json']
     snapshot = records['inventory.json'].get('git', {})
-    if metadata['snapshot']['commit'] != snapshot.get('commit') or metadata['snapshot']['dirty'] != bool(snapshot.get('working_tree')):
+    if metadata['snapshot']['commit'] != snapshot.get('commit') or metadata['snapshot']['dirty'] != (None if snapshot.get('working_tree') is None else bool(snapshot.get('working_tree'))):
         raise ValueError('Report metadata snapshot differs from inventory')
     kinds = ('security-vulnerability', 'dependency-advisory', 'control-gap', 'hardening', 'evidence-gap')
     statuses = ('suspected', 'confirmed', 'refuted', 'accepted-risk', 'fixed')

@@ -36,3 +36,14 @@ Evaluate real agent behavior separately from validator unit tests:
   no fabricated signed/visually checked PDF.
 
 These scenarios are an evaluation checklist, not a claim that live Claude sessions passed.
+
+## Packaged pipeline regression suite
+
+`tests/test_end_to_end.py` invokes installed-layout CLIs in fresh directories with spaces,
+executes validation/diagrams/Markdown/HTML and optional PDF/text reconciliation, verifies
+failed exports do not produce final outputs, and exercises checkpoint invalidation and
+unsupported documentation claims. Fixtures contain synthetic source evidence and a
+blocked runtime check. Optional PDF tests are skipped when dependencies are unavailable.
+
+These tests verify contracts and helpers. They do not measure real agent recall, successful
+Claude installation, arbitrary user template fidelity, or scanner detection accuracy.
