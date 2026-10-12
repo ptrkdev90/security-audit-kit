@@ -375,3 +375,8 @@ Consult [official sources](docs/SOURCES.md) for tool documentation and framework
 
 `evidence.json` links findings to timestamped, snapshot-specific source, runtime,
 scanner or documentary evidence. Validation checks references and types, not truth.
+
+### Threat-driven plan
+
+`audit-plan.json` connects abuse cases to coverage rows and findings. Required domain
+checks must appear in coverage, including blocked runtime/deployment verification.

@@ -106,6 +106,30 @@ def validate(directory, final=False):
     for row in data.get("tool-runs", []):
         if row["status"] in {"completed", "failed"} and row["exit_code"] is None: errors.append(row["id"] + ": missing exit code")
         if row["status"] in {"failed", "unavailable"} and not row["limitations"]: errors.append(row["id"] + ": requires execution limitation")
+    if versions.get("findings") == "1.2":
+        try:
+            plan = json.loads((directory / "audit-plan.json").read_text(encoding="utf-8"))
+            plan_schema = json.loads((SCHEMAS / "audit-plan.schema.json").read_text(encoding="utf-8"))
+            problems = schema_errors(plan, plan_schema, "audit-plan")
+            errors.extend(problems)
+            if not problems:
+                threat_ids = {r["id"] for r in plan["threats"]}
+                if len(threat_ids) != len(plan["threats"]): errors.append("audit-plan: duplicate threat IDs")
+                for threat in plan["threats"]:
+                    if not threat["coverage_ids"] or any(ref not in coverage_ids for ref in threat["coverage_ids"]):
+                        errors.append(threat["id"] + ": threat needs valid coverage references")
+                for finding in data.get("findings", []):
+                    if any(ref not in threat_ids for ref in finding.get("threat_ids", [])):
+                        errors.append(finding["id"] + ": unknown threat reference")
+                    if finding.get("kind") == "security-vulnerability" and not finding.get("threat_ids"):
+                        errors.append(finding["id"] + ": vulnerability requires threat reference")
+                checks = {r["check"] for r in data.get("coverage", [])}
+                if any(domain not in checks for domain in plan["required_domains"]):
+                    errors.append("audit-plan: required domain missing from coverage")
+                if final and (not plan["threats"] or not plan["required_domains"]):
+                    errors.append("audit-plan: final audit needs threats and required domains")
+        except (OSError, ValueError) as exc:
+            errors.append("audit-plan: cannot load JSON (" + type(exc).__name__ + ")")
     if final:
         if not data.get("coverage"): errors.append("Final audit requires nonempty coverage")
         for name in ("inventory.json", "scope.md", "threat-model.md", "report.md"):

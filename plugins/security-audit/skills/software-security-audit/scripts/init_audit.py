@@ -12,6 +12,7 @@ def initialize(output):
         (output / name).write_text((templates / name).read_text(encoding="utf-8"), encoding="utf-8")
     for name in ("coverage", "findings", "tool-runs", "evidence"):
         (output / (name + ".json")).write_text(json.dumps({"schema_version": "1.2" if name == "findings" else "1.0", "items": []}, indent=2) + "\n", encoding="utf-8")
+    (output / "audit-plan.json").write_text(json.dumps({"schema_version": "1.0", "scope_summary": "Establish scope before review", "threats": [], "required_domains": [], "limitations": []}, indent=2) + "\n", encoding="utf-8")
     return output
 
 def main():

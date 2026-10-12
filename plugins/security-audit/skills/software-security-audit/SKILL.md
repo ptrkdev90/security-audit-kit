@@ -70,6 +70,7 @@ and [CI/supply chain](references/ci-supply-chain.md) according to discovered tec
 For other languages, adapt checks and record unsupported analyzer coverage; do not
 pretend these references cover all memory-safety or embedded-system requirements.
 
+Create `audit-plan.json` using [Threat-driven coverage](references/audit-plan.md).
 Populate `coverage.json` BEFORE reviewing. Create a row per relevant component and
 security domain, with file/path scope, check, method, applicability and status.
 A source-only audit must still include runtime/deployment rows marked `blocked` when

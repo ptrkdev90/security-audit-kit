@@ -60,6 +60,7 @@ class HelpersTest(unittest.TestCase):
     def test_final_review_with_blocker_is_structurally_valid(self):
         row = self.coverage("blocked"); row["evidence"] = []; row["limitations"] = ["Runtime unavailable; request test credentials"]
         self.write("coverage", [row])
+        self.write("findings", [])
         (self.audit / "inventory.json").write_text("{}")
         self.assertEqual(validator.validate(self.audit, True), [])
 
