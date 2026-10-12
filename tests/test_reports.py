@@ -45,3 +45,14 @@ class ReportsTest(unittest.TestCase):
         data=json.loads((self.audit/'report-metadata.json').read_text()); data.update(language='de',display_timezone='Europe/Berlin'); write(self.audit,'report-metadata.json',data)
         out=self.renderer.render(self.audit,self.base/'export'); document=(out/'report.html').read_text()
         self.assertIn('Prüfabdeckung',document); self.assertIn('Europe/Berlin',document)
+
+    def test_export_reconciliation_detects_tampering(self):
+        out=self.renderer.render(self.audit,self.base/'export')
+        (out/'report.html').write_text('<script>bad</script>')
+        errors=load('check_exports').check(self.audit,out)
+        self.assertTrue(any('hash mismatch' in e for e in errors));self.assertIn('script',errors)
+
+    def test_source_change_after_export_detected(self):
+        out=self.renderer.render(self.audit,self.base/'export')
+        data=json.loads((self.audit/'report-source.json').read_text());data['remediation_summary']='Updated';write(self.audit,'report-source.json',data)
+        self.assertTrue(any('Source changed' in e for e in load('check_exports').check(self.audit,out)))

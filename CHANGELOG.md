@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0
+
+- Shared validated report model; matching Markdown/static HTML and optional neutral PDF.
+- Schema-checked cover, timestamps, identities and unsigned sign-off metadata.
+- Safe theme data, escaped report content and source/output receipts.
+- Content/hash reconciliation and optional PDF extraction tests, including long German text.
+- Custom template skills still require their own renderer and visual validation.
+
+
 ## 0.5.0
 
 - Lean phase routing and conservative, allowlisted snapshot/resume helper.

@@ -28,7 +28,9 @@ def theme_from(path=None):
 
 def value(data):
     if data is None: return 'Not provided'
-    if isinstance(data, (dict,list)): return json.dumps(data, ensure_ascii=False, indent=2)
+    if isinstance(data, dict): return '\n'.join(str(k) + ': ' + value(v) for k,v in data.items())
+    if isinstance(data, list): return '\n'.join('- ' + value(v) for v in data) or '—'
+    if isinstance(data, bool): return 'true' if data else 'false'
     return str(data)
 
 
@@ -41,7 +43,7 @@ def sections(model):
     return [('cover',meta['report_title'],cover),
             ('outcome',LABELS[meta['language']]['outcome'],narrative['executive_outcome']),
             ('counts',LABELS[meta['language']]['counts'],model['counts']),
-            ('limits',LABELS[meta['language']]['limits'],{'report':narrative['limitations'],'inventory':model['limitations'],'architecture':model['architecture']['limitations'],'plan':model['plan']['limitations']}),
+            ('limits',LABELS[meta['language']]['limits'],{'report':narrative['limitations'],'inventory':model['limitations'],'architecture':model['architecture']['limitations'],'plan':model['plan']['limitations'],'blocked_checks':[{'id':r['id'],'check':r['check'],'limitations':r['limitations']} for r in model['coverage'] if r['status']=='blocked']}),
             ('scope',LABELS[meta['language']]['scope'],{'summary':narrative['scope_summary'],'snapshot':meta['snapshot'],'scope_document':model['scope_document']}),
             ('threats',LABELS[meta['language']]['threats'],{'summary':narrative['threat_summary'],'architecture':model['architecture'],'threats':model['plan']['threats'],'threat_document':model['threat_document']}),
             ('findings',LABELS[meta['language']]['findings'],model['findings']),
@@ -57,7 +59,8 @@ def markdown(model):
     # Code fences escape even adversarial Markdown/HTML without creating active links.
     out = []
     for _, title, data in sections(model):
-        out.extend(['## ' + title.replace('\n',' '), ''])
+        safe_title = __import__('re').sub(r'([\\`*_{}\[\]()#+.!|>])', r'\\\1', html.escape(title.replace('\n',' ')))
+        out.extend(['## ' + safe_title, ''])
         content = value(data)
         longest = max((len(run) for run in __import__('re').findall(r'`+',content)),default=0)
         fence = '`' * max(3,longest+1)

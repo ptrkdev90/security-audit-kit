@@ -6,7 +6,7 @@
 
 [![Validate](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml/badge.svg)](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.5.0-334155)
+![Version](https://img.shields.io/badge/version-0.6.0-334155)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-D97757)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
 
@@ -154,8 +154,8 @@ template's supported export workflow; no universal Claude template API is assume
 **Requirements:** an accessible template and installed document/PDF rendering tools
 for custom exports. Without a selected template, use a neutral default layout.
 If rendering is unavailable, the agent delivers Markdown and metadata and records
-PDF export as blocked. This plugin supplies instructions, not a bundled PDF engine
-or a built-in Claude Design integration.
+PDF export as blocked. The plugin now includes a neutral local PDF exporter using optional installed ReportLab.
+Custom template skills use their own exporter; no universal Claude Design API is assumed.
 
 A signature image requires the signer's explicit authorization for that report.
 Certificate-based digital signing requires a separate authorized signing workflow.
@@ -394,3 +394,18 @@ select evidence-backed attack-path views without external rendering services.
 The entry skill loads phase/stack references on demand. Allowlisted checkpoints detect
 content/context changes and require manual reconciliation. See [token measurement](docs/TOKEN-USAGE.md);
 smaller instruction text is not a measured reduction in actual model usage.
+
+### Offline report exports
+
+Populate `report-source.json` and `report-metadata.json`, then run from your installed skill:
+
+```sh
+python3 <skill-directory>/scripts/render_report.py <audit> --output <audit>/export-001
+python3 <skill-directory>/scripts/pdf_report.py <audit> --output <audit>/export-001/report.pdf
+python3 <skill-directory>/scripts/check_exports.py <audit> <audit>/export-001 --pdf
+```
+
+HTML/Markdown use the standard library. PDF needs installed ReportLab; PDF text checks need
+installed pypdf. The neutral theme supports a palette/font choice; DOCX and template skills
+retain their own export workflow. Receipts bind sources and outputs by hash. Text validation
+does not replace inspecting every rendered page. All default reports remain unsigned.

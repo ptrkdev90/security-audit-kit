@@ -26,7 +26,8 @@ def export_pdf(audit, output, theme_path=None, font_path=None):
     model=build(audit); theme=theme_from(theme_path); output=Path(output)
     if output.exists(): raise FileExistsError('PDF output exists')
     if model['metadata']['signature']['status']!='unsigned': raise ValueError('Neutral PDF exporter is unsigned only')
-    choices=[Path(font_path)] if font_path else [Path('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'),Path(reportlab.__file__).parent/'fonts/Vera.ttf']
+    family='DejaVuSerif.ttf' if theme['font_family']=='serif' else 'DejaVuSans.ttf'
+    choices=[Path(font_path)] if font_path else [Path('/usr/share/fonts/truetype/dejavu')/family,Path(reportlab.__file__).parent/'fonts/Vera.ttf']
     font_file=next((p for p in choices if p.is_file()),None)
     if font_file is None: raise RuntimeError('Provide an installed font supporting the report language')
     font=TTFont('AuditBody',str(font_file)); pdfmetrics.registerFont(font)
@@ -36,6 +37,7 @@ def export_pdf(audit, output, theme_path=None, font_path=None):
     styles=getSampleStyleSheet()
     for name in ('Normal','Title','Heading1','Heading2','Heading3','BodyText'):
         styles[name].fontName='AuditBody'
+    for heading in ('Heading1','Heading2','Heading3'): styles[heading].keepWithNext=True
     styles['BodyText'].fontSize=9; styles['BodyText'].leading=13; styles['BodyText'].spaceAfter=7
     styles['Title'].fontSize=26; styles['Title'].leading=32; styles['Title'].textColor=colors.HexColor(theme['accent_color'])
     styles['Heading1'].fontSize=17; styles['Heading1'].leading=22; styles['Heading1'].textColor=colors.HexColor(theme['accent_color'])
@@ -52,7 +54,9 @@ def export_pdf(audit, output, theme_path=None, font_path=None):
                 story.append(Spacer(1,7))
         elif isinstance(data,dict):
             for key,entry in data.items():
-                story.append(Paragraph(html.escape(key),label_style)); story.append(paragraph(entry))
+                row=Table([[Paragraph(html.escape(key),label_style),paragraph(entry)]],colWidths=[112,387],hAlign='LEFT',splitInRow=1)
+                row.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),8),('TOPPADDING',(0,0),(-1,-1),3),('BOTTOMPADDING',(0,0),(-1,-1),3)]))
+                story.append(row)
         else: story.append(paragraph(data))
     content=sections(model)
     story.append(paragraph(model['metadata']['report_title'],'Title'))

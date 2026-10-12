@@ -121,3 +121,8 @@ Keep export receipts and canonical sources together. PDF receipts default to vis
 inspection not performed. Render every page with local tools, inspect layout and reconcile
 text, findings and blockers. Never mark a missing export checked. The exporter is unsigned;
 actual signing remains a separate authorized workflow after final rendering.
+
+Run `check_exports.py <audit> <export> --pdf` to reconcile hashes and required claims.
+PDF text checks need installed pypdf. Footer text is excluded from the neutral renderer's
+body comparison. Arbitrary external templates require adapted content checks and page
+inspection. This helper never approves visual layout or factual audit assertions.
