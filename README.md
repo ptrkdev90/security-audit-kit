@@ -4,6 +4,7 @@
 
 **Whole-project security reviews for Claude Code — with evidence, verified findings and explicit coverage.**
 
+[![Validate](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml/badge.svg)](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Version](https://img.shields.io/badge/version-0.1.0-334155)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-D97757)
@@ -38,25 +39,20 @@ its skills are not bundled. Reports can be written in **English or German**.
 
 ## 🚀 Quick start
 
-### 1. Publish the repository
+### 1. Install in Claude Code
 
-Upload the contents of this folder to a GitHub repository named
-`software-security-audit`. Include both `.claude-plugin` directories. You can customize
-`owner.name` in the marketplace manifest.
-
-### 2. Install in Claude Code
-
-Run these commands in your shell. Replace `YOUR-USER` with your GitHub user or organization:
+Run these commands in your shell:
 
 ```sh
-claude plugin marketplace add YOUR-USER/software-security-audit
+claude plugin marketplace add ptrkdev90/security-audit-kit
 claude plugin install security-audit@security-audit-kit
 ```
 
-The GitHub repository name is `software-security-audit`; the internal marketplace name
-is `security-audit-kit`, and the plugin name is `security-audit`.
+This public marketplace is hosted at
+[ptrkdev90/security-audit-kit](https://github.com/ptrkdev90/security-audit-kit).
+The marketplace name is `security-audit-kit`, and the plugin name is `security-audit`.
 
-### 3. Audit a project
+### 2. Audit a project
 
 Start Claude Code in the target project and enter:
 
@@ -230,13 +226,6 @@ and a synthetic source-only trial detected two access-control findings while rej
 an embedded instruction to suppress them. That trial is not an accuracy benchmark.
 Plugin installation and behavior with your Claude Code version still need local verification.
 See [evaluation scenarios](docs/EVALUATION.md) before relying on the workflow.
-
-A live CI badge is intentionally omitted until the actual GitHub owner/repository exists.
-After publication, insert the following with your real owner:
-
-```markdown
-[![Validate](https://github.com/YOUR-USER/software-security-audit/actions/workflows/validate.yml/badge.svg)](https://github.com/YOUR-USER/software-security-audit/actions/workflows/validate.yml)
-```
 
 ### Standalone skill installation
 
