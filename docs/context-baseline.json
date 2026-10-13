@@ -1,0 +1,9 @@
+{
+  "baseline_commit": "16a5fc65975534584902f9d2646626e7d3df0251",
+  "measured_text": "SKILL.md after 0.4.0 additions",
+  "sha256": "0ac88ca77218412dd164d1bcdc2d8646a26dbcc66618c8618403fddbf0d6f8a7",
+  "characters": 9439,
+  "words": 1148,
+  "utf8_bytes": 9439,
+  "metric_limits": "Text size proxy only; not measured model token usage or audit accuracy."
+}

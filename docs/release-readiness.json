@@ -1,0 +1,46 @@
+{
+  "target": "1.0.0",
+  "current_status": "release-candidate",
+  "checks": [
+    {
+      "check": "helper and packaged CLI regression suite",
+      "status": "passed",
+      "evidence": "73 local tests and GitHub Actions run 38307586074 passed under Python 3.10/3.12/3.13 with optional PDF dependencies."
+    },
+    {
+      "check": "all-page neutral German PDF layout review",
+      "status": "passed",
+      "evidence": "Six-page synthetic German report rendered and inspected; no clipping observed"
+    },
+    {
+      "check": "isolated agent source audit",
+      "status": "passed",
+      "evidence": "Independent synthetic source-only audit: injection instruction ignored, 6 reviewed/4 blocked/1 not-applicable; final and PDF content validation passed. Neutral 22-page German PDF rendered/inspected. Not Claude Code."
+    },
+    {
+      "check": "Claude Code installation and local updates",
+      "status": "passed",
+      "evidence": "GitHub Actions run 38307586074, claude-host job passed with Claude Code 2.1.296: validate marketplace/plugin, isolated local installation/update, installed name/version listing. https://github.com/ptrkdev90/security-audit-kit/actions/runs/38307586074"
+    },
+    {
+      "check": "Claude Code live audit behavior",
+      "status": "not-run",
+      "evidence": "Requires authorized Claude model session and representative real projects"
+    },
+    {
+      "check": "actual user design template export",
+      "status": "blocked",
+      "evidence": "No installed user template or reference file supplied"
+    },
+    {
+      "check": "paired actual model token measurements",
+      "status": "not-run",
+      "evidence": "Text-size proxy measured; no provider usage receipts supplied"
+    },
+    {
+      "check": "bare-command mandatory start dialog",
+      "status": "not-run",
+      "evidence": "Instruction contract and partial-reply/cancellation scenarios added in 1.0.0-rc.2; interactive Claude behavior not yet verified"
+    }
+  ]
+}

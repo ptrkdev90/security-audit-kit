@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "executive_outcome": "Replace with supported outcome and prominent blockers",
+  "scope_summary": "Replace with actual reviewed scope",
+  "threat_summary": "Replace with actual threats and uncertainty",
+  "limitations": [
+    "Replace with actual scope, runtime and tool limitations"
+  ],
+  "remediation_summary": "Replace with evidence-based priorities and next verification",
+  "compliance_summary": "Not requested",
+  "audience": [
+    "Project owner",
+    "Engineering reviewer"
+  ],
+  "glossary": []
+}

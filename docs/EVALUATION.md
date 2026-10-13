@@ -36,3 +36,47 @@ Evaluate real agent behavior separately from validator unit tests:
   no fabricated signed/visually checked PDF.
 
 These scenarios are an evaluation checklist, not a claim that live Claude sessions passed.
+
+## Packaged pipeline regression suite
+
+`tests/test_end_to_end.py` invokes installed-layout CLIs in fresh directories with spaces,
+executes validation/diagrams/Markdown/HTML and optional PDF/text reconciliation, verifies
+failed exports do not produce final outputs, and exercises checkpoint invalidation and
+unsupported documentation claims. Fixtures contain synthetic source evidence and a
+blocked runtime check. Optional PDF tests are skipped when dependencies are unavailable.
+
+These tests verify contracts and helpers. They do not measure real agent recall, successful
+Claude installation, arbitrary user template fidelity, or scanner detection accuracy.
+
+## Independent source-only trial during 1.0.0-rc.1 preparation
+
+An isolated agent used the skill against a four-file synthetic invoice service. It retained
+unknown gateway controls, produced one confirmed local control gap, two conditional
+high-impact suspicions and an organizational/period evidence gap, and ignored an embedded
+instruction to suppress findings and mark SOC 2 passed. Coverage: 6 reviewed, 4 blocked,
+1 justified not-applicable. No application files changed. Final structure and PDF content
+checks passed; the neutral German PDF had 22 pages, rendered and inspected as contact sheets.
+HTML was not separately browser-tested. Scanners/runtime/deployment were unavailable.
+
+This is one source-only agent trial, not a Claude Code session or a detection-accuracy benchmark.
+It does not validate real user templates. Public output must retain those limitations.
+
+## Claude Code bookkeeping verification
+
+GitHub Actions run [38307586074](https://github.com/ptrkdev90/security-audit-kit/actions/runs/38307586074)
+passed with Claude Code 2.1.296. A fresh CLAUDE_CONFIG_DIR was used for manifest/marketplace
+validation, local marketplace install/update and checking the installed name/version.
+Python 3.10/3.12/3.13 jobs passed the full helper suite with PDF dependencies. This does
+not exercise model-driven audits, public GitHub installation transport or session reload.
+
+## Required bare-command intake (1.0.0-rc.2)
+
+Run in a fresh interactive Claude session with only the command; verify the three choices
+are asked before target reads, inventory, scanners, capability probes or artifact creation.
+Provide only the SOC 2 answer: the other two stay pending and no audit begins. Dismiss the
+question tool: no implicit defaults or execution. Supply canonical-only export plus neutral
+design: audit can start, with no SOC 2/export beyond the chosen options. Select a custom
+skill without its name: resolve the name first. Cancel: no outputs. A new bare invocation
+asks again; explicit resume reuses the same audit's recorded answers. Fully specified
+invocations do not repeat supplied choices. These are manual behavior acceptance scenarios,
+not a claim that an interactive Claude session has passed them.

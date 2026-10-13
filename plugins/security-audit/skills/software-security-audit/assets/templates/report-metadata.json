@@ -18,22 +18,31 @@
   },
   "reviewed_by": {
     "name": null,
-    "reviewed_at": null
+    "reviewed_at": null,
+    "evidence_ids": []
   },
   "approved_by": {
     "name": null,
-    "approved_at": null
+    "approved_at": null,
+    "evidence_ids": []
   },
   "confidentiality": null,
   "template": {
     "skill_name": null,
-    "source_file": null
+    "source_file": null,
+    "version": null,
+    "source_sha256": null
   },
   "signature": {
     "status": "unsigned",
     "type": "none",
     "signer": null,
     "signed_at": null,
-    "verification_result": null
-  }
+    "verification_result": null,
+    "evidence_ids": []
+  },
+  "schema_version": "1.0",
+  "plugin_version": null,
+  "language": "en",
+  "document_history": []
 }

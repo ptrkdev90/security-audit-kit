@@ -8,7 +8,7 @@ SCHEMAS = Path(__file__).resolve().parents[1] / "assets" / "schemas"
 
 def schema_errors(value, schema, path="$ "):
     errors = []
-    kinds = {"object": lambda v: isinstance(v, dict), "array": lambda v: isinstance(v, list), "string": lambda v: isinstance(v, str), "integer": lambda v: isinstance(v, int) and not isinstance(v, bool), "null": lambda v: v is None}
+    kinds = {"object": lambda v: isinstance(v, dict), "array": lambda v: isinstance(v, list), "string": lambda v: isinstance(v, str), "boolean": lambda v: isinstance(v, bool), "integer": lambda v: isinstance(v, int) and not isinstance(v, bool), "null": lambda v: v is None}
     expected = schema.get("type")
     if expected and not any(kinds[k](value) for k in ([expected] if isinstance(expected, str) else expected)):
         return [path + ": invalid type"]
@@ -31,9 +31,11 @@ def schema_errors(value, schema, path="$ "):
 def validate(directory, final=False):
     directory = Path(directory)
     errors, data, versions = [], {}, {}
-    for name in ("coverage", "findings", "tool-runs"):
+    for name in ("coverage", "findings", "tool-runs", "evidence"):
         try:
-            value = json.loads((directory / (name + ".json")).read_text(encoding="utf-8"))
+            artifact = directory / (name + ".json")
+            if artifact.is_symlink(): raise ValueError("Symlink artifact")
+            value = json.loads(artifact.read_text(encoding="utf-8"))
             schema = json.loads((SCHEMAS / (name + ".schema.json")).read_text(encoding="utf-8"))
             problems = schema_errors(value, schema, name)
             errors.extend(problems)
@@ -53,8 +55,32 @@ def validate(directory, final=False):
         if final and status == "pending": errors.append(row["id"] + ": pending coverage at finalization")
     if final and versions.get("findings") == "1.0":
         errors.append("findings: legacy 1.0 requires manual classification migration to 1.1 before finalization")
+    evidence = {r["id"]: r for r in data.get("evidence", [])}
+    for item in evidence.values():
+        try:
+            from datetime import datetime
+            dt = datetime.fromisoformat(item["observed_at"].replace("Z", "+00:00"))
+            if dt.tzinfo is None: raise ValueError()
+        except ValueError:
+            errors.append(item["id"] + ": observed_at requires an offset timestamp")
+        if item["sha256"] is not None:
+            import re
+            if not re.fullmatch(r"[0-9a-f]{64}", item["sha256"]):
+                errors.append(item["id"] + ": invalid sha256")
     for row in data.get("findings", []):
-        if versions.get("findings") == "1.1":
+        if versions.get("findings") == "1.2":
+            refs = row.get("evidence_ids", [])
+            if "evidence_ids" not in row or "threat_ids" not in row:
+                errors.append(row["id"] + ": requires evidence_ids and threat_ids")
+            if any(ref not in evidence for ref in refs):
+                errors.append(row["id"] + ": unknown evidence reference")
+            if row["status"] in {"confirmed", "accepted-risk", "fixed"} and not refs:
+                errors.append(row["id"] + ": requires registered evidence")
+            if row.get("kind") == "security-vulnerability" and row["status"] in {"confirmed", "accepted-risk", "fixed"}:
+                expected = {"source-trace": "source", "runtime-test": "runtime"}.get(row.get("verification_basis"))
+                if not any(evidence.get(ref, {}).get("type") == expected for ref in refs):
+                    errors.append(row["id"] + ": verification basis lacks matching evidence type")
+        if versions.get("findings") in {"1.1", "1.2"}:
             for field in ("kind", "verification_basis", "exploitability", "severity_rationale", "verification_limits", "refutation_scope"):
                 if field not in row:
                     errors.append(row["id"] + ": requires " + field)
@@ -82,6 +108,126 @@ def validate(directory, final=False):
     for row in data.get("tool-runs", []):
         if row["status"] in {"completed", "failed"} and row["exit_code"] is None: errors.append(row["id"] + ": missing exit code")
         if row["status"] in {"failed", "unavailable"} and not row["limitations"]: errors.append(row["id"] + ": requires execution limitation")
+    architecture_flows = set()
+    if (directory / "architecture.json").exists():
+        try:
+            if (directory / "architecture.json").is_symlink(): raise ValueError("Symlink artifact")
+            architecture = json.loads((directory / "architecture.json").read_text(encoding="utf-8"))
+            arch_schema = json.loads((SCHEMAS / "architecture.schema.json").read_text(encoding="utf-8"))
+            problems = schema_errors(architecture, arch_schema, "architecture")
+            errors.extend(problems)
+            if not problems:
+                import re
+                groups = {name: {r["id"] for r in architecture[name]} for name in ("boundaries", "components", "flows")}
+                architecture_flows = groups["flows"]
+                ids = [row["id"] for group in groups for row in architecture[group]]
+                if len(ids) != len(set(ids)): errors.append("architecture: duplicate IDs")
+                for group in groups:
+                    for row in architecture[group]:
+                        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,63}", row["id"]):
+                            errors.append("architecture: unsafe ID")
+                        if any(ref not in evidence for ref in row["evidence_ids"]):
+                            errors.append(row["id"] + ": unknown architecture evidence")
+                        if row["status"] == "observed" and not row["evidence_ids"]:
+                            errors.append(row["id"] + ": observed architecture requires evidence")
+                        if row["status"] != "observed" and not row["limitations"]:
+                            errors.append(row["id"] + ": uncertain architecture requires limitations")
+                for row in architecture["components"]:
+                    if row["boundary_id"] not in groups["boundaries"]:
+                        errors.append(row["id"] + ": unknown trust boundary")
+                for row in architecture["flows"]:
+                    if row["source"] not in groups["components"] or row["target"] not in groups["components"]:
+                        errors.append(row["id"] + ": unknown flow endpoint")
+                if final and versions.get("findings") == "1.2" and (not architecture["components"] or not architecture["stakeholders"] or not architecture["concerns"]):
+                    errors.append("architecture: final audit requires components, stakeholders and concerns")
+        except (OSError, ValueError) as exc:
+            errors.append("architecture: cannot load JSON (" + type(exc).__name__ + ")")
+    elif versions.get("findings") == "1.2":
+        errors.append("architecture: missing architecture.json")
+    if versions.get("findings") == "1.2":
+        try:
+            if (directory / "audit-plan.json").is_symlink(): raise ValueError("Symlink artifact")
+            plan = json.loads((directory / "audit-plan.json").read_text(encoding="utf-8"))
+            plan_schema = json.loads((SCHEMAS / "audit-plan.schema.json").read_text(encoding="utf-8"))
+            problems = schema_errors(plan, plan_schema, "audit-plan")
+            errors.extend(problems)
+            if not problems:
+                threat_ids = {r["id"] for r in plan["threats"]}
+                if len(threat_ids) != len(plan["threats"]): errors.append("audit-plan: duplicate threat IDs")
+                for threat in plan["threats"]:
+                    if any(ref not in architecture_flows for ref in threat["flow_ids"]):
+                        errors.append(threat["id"] + ": unknown threat flow reference")
+                    if not threat["coverage_ids"] or any(ref not in coverage_ids for ref in threat["coverage_ids"]):
+                        errors.append(threat["id"] + ": threat needs valid coverage references")
+                for finding in data.get("findings", []):
+                    if any(ref not in threat_ids for ref in finding.get("threat_ids", [])):
+                        errors.append(finding["id"] + ": unknown threat reference")
+                    if finding.get("kind") == "security-vulnerability" and not finding.get("threat_ids"):
+                        errors.append(finding["id"] + ": vulnerability requires threat reference")
+                checks = {r["check"] for r in data.get("coverage", [])}
+                if any(domain not in checks for domain in plan["required_domains"]):
+                    errors.append("audit-plan: required domain missing from coverage")
+                if final and (not plan["threats"] or not plan["required_domains"]):
+                    errors.append("audit-plan: final audit needs threats and required domains")
+        except (OSError, ValueError) as exc:
+            errors.append("audit-plan: cannot load JSON (" + type(exc).__name__ + ")")
+    if versions.get("findings") == "1.2":
+        for record in ("report-source", "report-metadata"):
+            try:
+                if (directory / (record + ".json")).is_symlink(): raise ValueError("Symlink artifact")
+                value = json.loads((directory / (record + ".json")).read_text(encoding="utf-8"))
+                schema = json.loads((SCHEMAS / (record + ".schema.json")).read_text(encoding="utf-8"))
+                problems = schema_errors(value, schema, record)
+                errors.extend(problems)
+                if not problems and final:
+                    if record == "report-source":
+                        if any("Replace with" in str(v) for v in value.values()):
+                            errors.append("report-source: unresolved starter text")
+                    else:
+                        from datetime import datetime
+                        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+                        try: ZoneInfo(value["display_timezone"])
+                        except ZoneInfoNotFoundError: errors.append("report-metadata: unknown timezone")
+                        dates = {}
+                        for key in ("audit_started_at", "audit_ended_at", "generated_at"):
+                            try:
+                                dates[key] = datetime.fromisoformat((value[key] or "").replace("Z", "+00:00"))
+                                if dates[key].tzinfo is None: raise ValueError()
+                            except (ValueError, TypeError): errors.append("report-metadata: requires timestamp " + key)
+                        if len(dates) == 3 and all(v.tzinfo is not None for v in dates.values()) and not (dates["audit_started_at"] <= dates["audit_ended_at"] <= dates["generated_at"]):
+                            errors.append("report-metadata: invalid audit timestamp order")
+                        if not value["report_id"] or not value["project_name"]:
+                            errors.append("report-metadata: report ID and project required")
+                        for key, date_key in (("reviewed_by", "reviewed_at"), ("approved_by", "approved_at")):
+                            signoff = value[key]
+                            if signoff["name"] or signoff[date_key]:
+                                if not signoff["name"] or not signoff[date_key] or not signoff["evidence_ids"]:
+                                    errors.append("report-metadata: sign-off requires identity, date and evidence")
+                            if any(ref not in evidence for ref in signoff["evidence_ids"]): errors.append("report-metadata: unknown sign-off evidence")
+                        signature = value["signature"]
+                        if signature["status"] == "unsigned":
+                            if signature["type"] != "none" or any(signature[k] is not None for k in ("signer", "signed_at", "verification_result")) or signature["evidence_ids"]:
+                                errors.append("report-metadata: unsigned state contradicts signature fields")
+                        elif not signature["signer"] or not signature["signed_at"] or not signature["evidence_ids"]:
+                            errors.append("report-metadata: signature requires authorized evidence")
+                        if any(ref not in evidence for ref in signature["evidence_ids"]): errors.append("report-metadata: unknown signature evidence")
+            except (OSError, ValueError) as exc:
+                errors.append(record + ": cannot load JSON (" + type(exc).__name__ + ")")
+    if (directory / "documentation-profile.json").exists():
+        try:
+            if (directory / "documentation-profile.json").is_symlink(): raise ValueError("Symlink artifact")
+            profile = json.loads((directory / "documentation-profile.json").read_text(encoding="utf-8"))
+            schema = json.loads((SCHEMAS / "documentation-profile.schema.json").read_text())
+            problems = schema_errors(profile, schema, "documentation-profile")
+            errors.extend(problems)
+            if not problems:
+                for item in profile["items"]:
+                    if any(ref not in evidence for ref in item["evidence_ids"]):
+                        errors.append("documentation-profile: unknown evidence reference")
+                    if item["full_text_reviewed"] and not item["evidence_ids"]:
+                        errors.append("documentation-profile: full-text review requires evidence")
+        except (OSError, ValueError) as exc:
+            errors.append("documentation-profile: cannot load JSON (" + type(exc).__name__ + ")")
     if final:
         if not data.get("coverage"): errors.append("Final audit requires nonempty coverage")
         for name in ("inventory.json", "scope.md", "threat-model.md", "report.md"):

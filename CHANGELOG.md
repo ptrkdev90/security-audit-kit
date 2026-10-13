@@ -1,5 +1,63 @@
 # Changelog
 
+## 1.0.0-rc.2
+
+- Mandatory pre-audit SOC 2, export and design questions for bare command invocation.
+- Wait for all explicit answers; no inventory/scanners/file creation during intake.
+- Partial replies, cancellation, custom template identity and explicit resume rules.
+- Current-task instructions retain their supplied choices; signing stays separate.
+- Dialog behavior requires an interactive Claude trial; helper checks cannot prove it.
+
+
+## 1.0.0-rc.1
+
+- All planned feature commits integrated; 73 local helper/pipeline tests passed.
+- Pinned multi-version Python/PDF CI and opt-in isolated Claude install/update smoke test.
+- Release-boundary tagging and consolidated public documentation.
+- Stable 1.0.0 awaits live Claude audit behavior and a real user-template trial.
+- Actual model-token savings, PDF/A/PDF/UA conformity and detection accuracy are not claimed.
+
+
+## 0.7.0
+
+- Audience/glossary and editorial guidance; documented accessibility/archival limits.
+- Separate audit/exporter/schema/template/report versions and source/output hashes.
+- Explicit manual migration, preserved original artifacts and unsigned revised reports.
+- Primary-source standards applicability guide and optional evidence-backed profile.
+
+
+## 0.6.0
+
+- Shared validated report model; matching Markdown/static HTML and optional neutral PDF.
+- Schema-checked cover, timestamps, identities and unsigned sign-off metadata.
+- Safe theme data, escaped report content and source/output receipts.
+- Content/hash reconciliation and optional PDF extraction tests, including long German text.
+- Custom template skills still require their own renderer and visual validation.
+
+
+## 0.5.0
+
+- Lean phase routing and conservative, allowlisted snapshot/resume helper.
+- Explicit context/tool/scope invalidation and snapshot expiry.
+- Text-size proxies and paired real-usage benchmark support with quality guardrails.
+- Actual model token savings remain unmeasured.
+
+
+## 0.4.0
+
+- Structured architecture with evidence, trust boundaries and explicit uncertainty.
+- Local Mermaid/SVG views, safe labels, and threat-to-flow references.
+- Schema/reference tests; no claims of deployed-state verification from diagrams.
+
+
+## 0.3.0
+
+- Findings 1.2: structured evidence and threat references, typed confirmation checks.
+- Threat-driven audit plan and required-domain reconciliation.
+- Regression tests for fabricated references, scanner-only confirmation and missing scope.
+- Existing 1.1 reports remain readable; new audits use 1.2. Migrate manually before exporting.
+
+
 ## 0.2.0
 
 - Separate security vulnerabilities, dependency advisories, control gaps, hardening and evidence gaps.

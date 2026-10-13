@@ -1,6 +1,9 @@
 {
   "name": "security-audit",
-  "version": "0.2.0",
+  "version": "1.0.0-rc.2",
   "description": "Whole-project software security audits with evidence, scanner triage and explicit coverage",
-  "license": "MIT"
+  "license": "MIT",
+  "author": {
+    "name": "Security Audit Kit Maintainers"
+  }
 }

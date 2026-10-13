@@ -23,8 +23,7 @@ usable without a PDF renderer.
 ## Metadata and cover
 
 Copy [Report metadata](../assets/templates/report-metadata.json) into the audit
-directory as `report-metadata.json`. This is an optional editable record, not a
-validated schema. Replace known values; leave unavailable identities null and show
+directory as `report-metadata.json`. The metadata is validated against its schema. Replace known values; leave unavailable identities null and show
 "Not provided" on the cover. Ask only when an identity is needed to complete a
 requested sign-off. Never infer the auditor from the Git author, OS username or
 GitHub owner.
@@ -101,3 +100,29 @@ performed and outstanding export limitations. If no PDF renderer is available,
 deliver the Markdown and metadata and explicitly state that PDF export is blocked;
 never create a renamed Markdown file with a .pdf extension. PDF rendering is a
 presentation step, not a new security or compliance validation.
+
+## Built-in offline exports
+
+Fill `report-source.json` with actual narrative and `report-metadata.json` with document
+identity, snapshot and timestamps. Use the same canonical artifacts for every format:
+
+```sh
+python3 <skill-directory>/scripts/render_report.py <audit> --output <audit>/export-001
+python3 <skill-directory>/scripts/pdf_report.py <audit> --output <audit>/export-001/report.pdf
+```
+
+HTML and Markdown use Python's standard library. Neutral PDF requires an already installed
+ReportLab and a font supporting all characters; missing capability is an export blocker.
+Do not install silently. Optional `--theme report-theme.json` accepts only a declarative
+palette/font configuration. A DOCX or installed template skill uses its own document
+renderer; this neutral engine never claims to reproduce arbitrary design templates.
+
+Keep export receipts and canonical sources together. PDF receipts default to visual
+inspection not performed. Render every page with local tools, inspect layout and reconcile
+text, findings and blockers. Never mark a missing export checked. The exporter is unsigned;
+actual signing remains a separate authorized workflow after final rendering.
+
+Run `check_exports.py <audit> <export> --pdf` to reconcile hashes and required claims.
+PDF text checks need installed pypdf. Footer text is excluded from the neutral renderer's
+body comparison. Arbitrary external templates require adapted content checks and page
+inspection. This helper never approves visual layout or factual audit assertions.

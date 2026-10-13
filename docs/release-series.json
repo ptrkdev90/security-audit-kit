@@ -1,0 +1,33 @@
+{
+  "base_commit": "16a5fc65975534584902f9d2646626e7d3df0251",
+  "releases": [
+    {
+      "version": "0.3.0",
+      "boundary_commit_message": "Strengthen validation and regression fixtures"
+    },
+    {
+      "version": "0.4.0",
+      "boundary_commit_message": "Link attack paths to findings and coverage"
+    },
+    {
+      "version": "0.5.0",
+      "boundary_commit_message": "Add token and audit quality benchmarks"
+    },
+    {
+      "version": "0.6.0",
+      "boundary_commit_message": "Add rendering and output safety checks"
+    },
+    {
+      "version": "0.7.0",
+      "boundary_commit_message": "Add documentation standards applicability matrix"
+    },
+    {
+      "version": "1.0.0-rc.1",
+      "boundary_commit_message": "Publish stable release documentation"
+    },
+    {
+      "version": "1.0.0-rc.2",
+      "boundary_commit_message": "Require audit intake before bare command execution"
+    }
+  ]
+}
