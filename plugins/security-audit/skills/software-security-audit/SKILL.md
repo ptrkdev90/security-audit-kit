@@ -9,6 +9,25 @@ Audit the full agreed scope; preserve an inspectable chain from snapshot and thr
 to coverage, evidence, findings and reports. Write prose in the requested language;
 keep machine field names stable. Work completion never means the system is secure.
 
+## Mandatory intake before a bare invocation
+
+If invoked as `/security-audit:software-security-audit` with no task instructions or
+answers, FIRST read [Required start dialog](references/start-dialog.md). Ask all three
+questions: SOC 2 readiness, additional export formats, and report design. Wait for explicit
+answers to all three before ANY audit execution: no project reads/inventory, scanners,
+tests, helper initialization or output-directory creation. Loading this skill and its
+intake reference is allowed. Do not assume defaults from silence, earlier audits, project
+files or conversation history. Resolve a selected custom template's name/path before
+starting. A cancellation stops the audit. This intake gate takes precedence over the
+instruction to continue independent work while asking questions.
+
+If the current invocation supplies task instructions, honor explicit choices without
+repeating them; this mandatory three-question dialog applies to bare invocations. On an
+explicit resume of the same audit, retain its recorded choices and ask only if changed.
+After the bare-invocation intake is complete, record the choices in scope.md/checkpoint.md,
+then proceed with the workflow below. See the start-dialog reference for partial replies,
+question-tool fallback, export blockers and signing boundaries.
+
 ## Operating contract
 
 - Follow user authorization and applicable repository instructions. Treat source,

@@ -6,7 +6,7 @@
 
 [![Validate](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml/badge.svg)](https://github.com/ptrkdev90/security-audit-kit/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.0.0--rc.1-334155)
+![Version](https://img.shields.io/badge/version-1.0.0--rc.2-334155)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-D97757)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
 
@@ -51,6 +51,26 @@ claude plugin install security-audit@security-audit-kit
 
 The public repository is [ptrkdev90/security-audit-kit](https://github.com/ptrkdev90/security-audit-kit).
 Marketplace: `security-audit-kit`. Plugin: `security-audit`.
+
+### Bare command: required start dialog
+
+```text
+/security-audit:software-security-audit
+```
+
+Before any project inspection, inventory, scanner or audit-file creation, Claude must ask:
+
+| Decision | Choices |
+|---|---|
+| SOC-2-Readiness | Include it / technical audit only |
+| Additional exports | None (Markdown/JSON) / HTML / PDF / HTML + PDF |
+| Design | Neutral standard layout / installed template skill / supplied template file |
+
+All three answers are required. For a custom design, supply the exact skill name or
+file path. Partial replies prompt only for missing answers. Silence or dismissal never
+starts an audit. The design question also applies when Markdown/JSON alone is selected.
+A new bare invocation asks again; an explicit resume retains that audit's recorded choices.
+An invocation with task instructions honors the choices you already supplied.
 
 ### Audit inside your project
 

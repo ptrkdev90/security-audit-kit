@@ -68,3 +68,15 @@ passed with Claude Code 2.1.296. A fresh CLAUDE_CONFIG_DIR was used for manifest
 validation, local marketplace install/update and checking the installed name/version.
 Python 3.10/3.12/3.13 jobs passed the full helper suite with PDF dependencies. This does
 not exercise model-driven audits, public GitHub installation transport or session reload.
+
+## Required bare-command intake (1.0.0-rc.2)
+
+Run in a fresh interactive Claude session with only the command; verify the three choices
+are asked before target reads, inventory, scanners, capability probes or artifact creation.
+Provide only the SOC 2 answer: the other two stay pending and no audit begins. Dismiss the
+question tool: no implicit defaults or execution. Supply canonical-only export plus neutral
+design: audit can start, with no SOC 2/export beyond the chosen options. Select a custom
+skill without its name: resolve the name first. Cancel: no outputs. A new bare invocation
+asks again; explicit resume reuses the same audit's recorded answers. Fully specified
+invocations do not repeat supplied choices. These are manual behavior acceptance scenarios,
+not a claim that an interactive Claude session has passed them.

@@ -10,3 +10,9 @@
 - Source/configuration access vs. deployed-state evidence:
 - Assumptions and missing evidence:
 - Output location and redaction policy:
+
+## Start-dialog choices (bare invocation)
+Record the explicit answers before audit execution: SOC 2 readiness enabled/disabled;
+additional HTML/PDF formats or canonical Markdown/JSON only; neutral layout or exact
+template skill/file name. If the invocation included task instructions, record those
+choices instead and identify the source. Do not infer choices from silence.

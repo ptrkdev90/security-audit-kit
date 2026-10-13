@@ -36,6 +36,11 @@
       "check": "paired actual model token measurements",
       "status": "not-run",
       "evidence": "Text-size proxy measured; no provider usage receipts supplied"
+    },
+    {
+      "check": "bare-command mandatory start dialog",
+      "status": "not-run",
+      "evidence": "Instruction contract and partial-reply/cancellation scenarios added in 1.0.0-rc.2; interactive Claude behavior not yet verified"
     }
   ]
 }

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0-rc.2
+
+- Mandatory pre-audit SOC 2, export and design questions for bare command invocation.
+- Wait for all explicit answers; no inventory/scanners/file creation during intake.
+- Partial replies, cancellation, custom template identity and explicit resume rules.
+- Current-task instructions retain their supplied choices; signing stays separate.
+- Dialog behavior requires an interactive Claude trial; helper checks cannot prove it.
+
+
 ## 1.0.0-rc.1
 
 - All planned feature commits integrated; 73 local helper/pipeline tests passed.
